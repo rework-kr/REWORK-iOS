@@ -11,14 +11,16 @@ import SwiftUI
 import IntroFeature
 
 @main
-struct REWORKApp: App {
-    init () {
-        
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        return true
     }
 
-    var body: some Scene {
-        WindowGroup {
-            IntroView()
-        }
-  }
+    func application(
+        _ application: UIApplication,
+        didDiscardSceneSessions sceneSessions: Set<UISceneSession>
+    ) {}
 }

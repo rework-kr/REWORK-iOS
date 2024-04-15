@@ -21,6 +21,7 @@ let project = Project.module(
               dependencies: [
                 .Project.Domain.BaseDomain,
                 .Project.UserInterfaces.DesignSystem,
+                .Project.Module.FeatureThirdPartyLib,
                 .Project.Module.Utility
               ],
               settings: nil
