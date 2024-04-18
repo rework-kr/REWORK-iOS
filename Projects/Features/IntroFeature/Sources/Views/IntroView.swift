@@ -75,18 +75,18 @@ private extension IntroView {
     
     func setLayout() {
         self.backgroundColor = .white
+        let descriptionViewHeight: CGFloat = 200
         
         logoImageView.snp.makeConstraints {
             $0.width.height.equalTo(50)
             $0.centerX.equalToSuperview()
-            let descriptionViewTop = (APP_HEIGHT() / 2) - descriptionView.frame.height
-            print("descriptionViewTop", descriptionViewTop)
-            let centerY = descriptionViewTop / 2
+            let descriptionViewTop = (APP_HEIGHT() / 2) - descriptionViewHeight
+            let centerY = (descriptionViewTop + STATUS_BAR_HEIGHT()) / 2
             $0.centerY.equalTo(centerY)
         }
         
         descriptionView.snp.makeConstraints {
-            $0.height.equalTo(200)
+            $0.height.equalTo(descriptionViewHeight)
             $0.bottom.equalTo(self.snp.centerY)
             $0.centerX.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
