@@ -5,34 +5,37 @@
 //  Created by YoungK on 4/14/24.
 //  Copyright © 2024 youngkyu.song. All rights reserved.
 //
-
-import Foundation
-import UIKit
 import BaseFeature
+import UIKit
+import RxSwift
+import SnapKit
+import Then
+import ReactorKit
 
-class IntroViewController: BaseViewController {
+public final class IntroViewController: BaseViewController {
     var introView: IntroView!
-    var viewModel: IntroViewModel!
+    var disposeBag = DisposeBag()
     
-    init(viewModel: IntroViewModel) {
-        self.viewModel = viewModel
+    public init() {
         super.init(nibName: nil, bundle: nil)
-    }
-    
-    deinit {
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func loadView() {
-        super.loadView()
-        introView = IntroView(frame: self.view.frame)
+    deinit {
     }
     
-    override func viewDidLoad() {
+    public override func loadView() {
+        super.loadView()
+        introView = IntroView(frame: self.view.frame)
+        self.view.addSubview(introView)
+    }
+    
+    public override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 
 }
