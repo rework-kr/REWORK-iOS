@@ -6,11 +6,20 @@
 //  Copyright © 2024 youngkyu.song. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
+import UIKit
+import IntroFeature
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    var window: UIWindow?
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let scene = (scene as? UIWindowScene) else { return }
+        self.window = UIWindow(windowScene: scene)
+        self.window?.rootViewController = IntroViewController()
+        self.window?.makeKeyAndVisible()
     }
     
     func sceneWillEnterForeground(_ scene: UIScene) {
