@@ -36,7 +36,7 @@ public final class IntroView: BaseView {
         $0.layer.masksToBounds = true
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor(hex: "EDEDED").cgColor
-        
+        $0.horizontalPadding(10)
     }
     
     lazy var passwordTextField = UITextField().then {
@@ -51,6 +51,7 @@ public final class IntroView: BaseView {
         $0.layer.masksToBounds = true
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor(hex: "EDEDED").cgColor
+        $0.horizontalPadding(10)
     }
     
     
