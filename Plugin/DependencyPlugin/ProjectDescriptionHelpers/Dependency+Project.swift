@@ -18,6 +18,7 @@ public extension TargetDependency.Project.Features {
 }
 
 public extension TargetDependency.Project.Module {
+    static let testableThirdPartyLib = TargetDependency.module(target: .testableThirdPartyLib)
     static let FeatureThirdPartyLib = TargetDependency.module(target: .featureThirdPartyLib)
     static let ErrorModule = TargetDependency.module(target: .ErrorModule)
     static let KeychainModule = TargetDependency.module(target: .KeychainModule)

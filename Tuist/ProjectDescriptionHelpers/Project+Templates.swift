@@ -26,7 +26,9 @@ extension Project {
             packages: packages,
             settings: settings,
             targets: targets,
-            schemes: [.makeScheme(target: .debug, name: name)],
+            schemes: targets.contains { $0.product == .app } ?
+                [.makeDemoScheme(target: .debug, name: name)] :
+                [.makeScheme(target: .debug, name: name)],
             fileHeaderTemplate: fileHeaderTemplate,
             additionalFiles: additionalFiles,
             resourceSynthesizers: resourceSynthesizers)
@@ -202,6 +204,22 @@ extension Scheme {
         return Scheme(
             name: name,
             buildAction: .buildAction(targets: ["\(name)"]),
+            testAction: .targets(
+                ["\(name)Tests"],
+                configuration: target,
+                options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
+            ),
+            runAction: .runAction(configuration: target),
+            archiveAction: .archiveAction(configuration: target),
+            profileAction: .profileAction(configuration: target),
+            analyzeAction: .analyzeAction(configuration: target)
+        )
+    }
+    
+    static func makeDemoScheme(target: ConfigurationName, name: String) -> Scheme {
+        return Scheme(
+            name: name,
+            buildAction: .buildAction(targets: ["\(name)DemoApp"]),
             testAction: .targets(
                 ["\(name)Tests"],
                 configuration: target,

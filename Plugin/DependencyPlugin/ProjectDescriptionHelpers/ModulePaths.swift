@@ -39,6 +39,7 @@ public extension ModulePaths {
 
 public extension ModulePaths {
     enum Module: String, MicroTargetPathConvertable {
+        case testableThirdPartyLib
         case featureThirdPartyLib
         case ErrorModule
         case KeychainModule

@@ -49,7 +49,8 @@ let targets: [Target] = [
           sources: ["Tests/**"],
           resources: nil,
           dependencies: [
-            .target(name: env.name)
+            .target(name: env.name),
+            .Project.Module.testableThirdPartyLib
           ]
          )
 ]
