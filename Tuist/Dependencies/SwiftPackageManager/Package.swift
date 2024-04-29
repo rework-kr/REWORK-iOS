@@ -13,6 +13,7 @@ let package = Package(
         .package(url: "https://github.com/Moya/Moya.git", from: "15.0.3"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.6.0"),
         .package(url: "https://github.com/Quick/Quick.git", from: "7.5.0"),
-        .package(url: "https://github.com/Quick/Nimble.git", from: "13.2.1")
+        .package(url: "https://github.com/Quick/Nimble.git", from: "13.2.1"),
+        .package(url: "https://github.com/krzysztofzablocki/Inject.git", from: "1.4.0")
     ]
 )

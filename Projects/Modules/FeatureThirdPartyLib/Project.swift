@@ -17,6 +17,7 @@ let project = Project.module(
         .SPM.Moya,
         .SPM.Kingfisher,
         .SPM.Quick,
-        .SPM.Nimble
+        .SPM.Nimble,
+        .SPM.Inject
     ]
 )

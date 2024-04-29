@@ -18,4 +18,5 @@ public extension TargetDependency.SPM {
     static let ReactorKit = TargetDependency.external(name: "ReactorKit")
     static let Quick = TargetDependency.external(name: "Quick")
     static let Nimble = TargetDependency.external(name: "Nimble")
+    static let Inject = TargetDependency.external(name: "Inject")
 }
