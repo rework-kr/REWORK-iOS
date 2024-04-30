@@ -8,13 +8,13 @@ public enum ModulePaths {
 }
 
 extension ModulePaths: MicroTargetPathConvertable {
-    public func targetName(type: MicroTargetType) -> String {
+    public func targetName(suffix: MicroTargetType) -> String {
         switch self {
         case let .feature(module as any MicroTargetPathConvertable),
             let .module(module as any MicroTargetPathConvertable),
             let .userInterface(module as any MicroTargetPathConvertable),
             let .domain(module as any MicroTargetPathConvertable):
-            return module.targetName(type: type)
+            return module.targetName(suffix: suffix)
         }
     }
 }
@@ -55,18 +55,19 @@ public extension ModulePaths {
 
 public enum MicroTargetType: String {
     case interface = "Interface"
-    case sources = ""
+    //case sources = ""
     case testing = "Testing"
-    case unitTest = "Tests"
-    case demo = "Demo"
+    case unitTests = "Tests"
+    case demoApp = "DemoApp"
+    case empty = ""
 }
 
 public protocol MicroTargetPathConvertable {
-    func targetName(type: MicroTargetType) -> String
+    func targetName(suffix: MicroTargetType) -> String
 }
 
 public extension MicroTargetPathConvertable where Self: RawRepresentable {
-    func targetName(type: MicroTargetType) -> String {
-        "\(self.rawValue)\(type.rawValue)"
+    func targetName(suffix: MicroTargetType) -> String {
+        "\(self.rawValue)\(suffix.rawValue)"
     }
 }

@@ -18,12 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         print("didFinishLaunchingWithOptions")
-        
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return false }
-        let screenSize = windowScene.screen.bounds
-        print(screenSize)
-        
-        self.window = UIWindow(frame: screenSize)
+        self.window = UIWindow(windowScene: windowScene)
         window?.rootViewController = DemoIntroViewController()
         window?.makeKeyAndVisible()
 

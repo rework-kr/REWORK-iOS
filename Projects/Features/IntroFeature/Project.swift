@@ -26,39 +26,13 @@ let project = Project.module(
               ],
               settings: nil
              ),
-        .init(name: ModulePaths.Feature.IntroFeature.rawValue + "Tests",
-              destinations: .iOS,
-              product: .unitTests,
-              productName: nil,
-              bundleId: "\(env.organizationName).\(ModulePaths.Feature.IntroFeature.rawValue).Tests",
-              deploymentTargets: env.deploymentTargets,
-              infoPlist: .default,
-              sources: ["Tests/**"],
-              resources: nil,
-              entitlements: nil,
-              scripts: [],
-              dependencies: [
-                .Project.Features.IntroFeature,
-                .Project.Module.testableThirdPartyLib
-              ],
-              settings: nil
-             ),
-        .init(name: ModulePaths.Feature.IntroFeature.rawValue + "DemoApp",
-              destinations: .iOS,
-              product: .app,
-              bundleId: "\(env.organizationName).\(ModulePaths.Feature.IntroFeature.rawValue).demoApp",
-              deploymentTargets: env.deploymentTargets,
-              infoPlist: .default,
-              sources: ["DemoApp/Sources/**"],
-              resources: ["DemoApp/Resources/**"],
-              entitlements: nil,
-              scripts: [],
-              dependencies: [
-                .Project.Features.IntroFeature
-              ],
-              settings: .settings(base: ["OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -all_load"])
-              
-             )
+        .unitTests(baseModule: .feature(.IntroFeature), dependencies: [
+            .Project.Features.IntroFeature
+        ]),
+        
+        .demo(baseModule: .feature(.IntroFeature), dependencies: [
+            .Project.Features.IntroFeature
+        ]),
     ]
 )
 
