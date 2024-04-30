@@ -29,7 +29,7 @@ let targets: [Target] = [
           //entitlements: "Support/\(env.name).entitlements",
           scripts: [],
           dependencies: [
-            .Project.Features.IntroFeature,
+            .Project.Features.SignInFeature,
             .Project.Domain.AuthDomain,
             .Project.Domain.UserDomain
           ],

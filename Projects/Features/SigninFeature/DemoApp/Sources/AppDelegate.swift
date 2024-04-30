@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  REWORK
-//
-//  Created by YoungK on 4/14/24.
-//  Copyright © 2024 youngkyu.song. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -20,7 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("didFinishLaunchingWithOptions")
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return false }
         self.window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = DemoIntroViewController()
+        window?.rootViewController = DemoSignInViewController()
         window?.makeKeyAndVisible()
 
         return true

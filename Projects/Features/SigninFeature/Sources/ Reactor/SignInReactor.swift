@@ -1,6 +1,6 @@
 //
-//  IntroReactor.swift
-//  IntroFeature
+//  SignInReactor.swift
+//  SignInFeature
 //
 //  Created by YoungK on 4/19/24.
 //  Copyright © 2024 youngkyu.song. All rights reserved.
@@ -14,7 +14,7 @@ public enum ValidationResult: Equatable {
     case ok, no(_ msg: String)
 }
 
-public final class IntroReactor: Reactor {
+public final class SignInReactor: Reactor {
     public var initialState: State
     
     public enum Action {

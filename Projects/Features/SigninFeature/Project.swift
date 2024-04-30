@@ -4,14 +4,14 @@ import DependencyPlugin
 import EnvironmentPlugin
 
 let project = Project.module(
-    name: ModulePaths.Feature.IntroFeature.rawValue,
+    name: ModulePaths.Feature.SignInFeature.rawValue,
     packages: [],
     targets: [
-        .init(name: ModulePaths.Feature.IntroFeature.rawValue,
+        .init(name: ModulePaths.Feature.SignInFeature.rawValue,
               destinations: .iOS,
               product: .staticFramework,
               productName: nil,
-              bundleId: "\(env.organizationName).\(ModulePaths.Feature.IntroFeature.rawValue)",
+              bundleId: "\(env.organizationName).\(ModulePaths.Feature.SignInFeature.rawValue)",
               deploymentTargets: env.deploymentTargets,
               infoPlist: .default,
               sources: ["Sources/**"],
@@ -26,12 +26,12 @@ let project = Project.module(
               ],
               settings: nil
              ),
-        .unitTests(baseModule: .feature(.IntroFeature), dependencies: [
-            .Project.Features.IntroFeature
+        .unitTests(baseModule: .feature(.SignInFeature), dependencies: [
+            .Project.Features.SignInFeature
         ]),
         
-        .demo(baseModule: .feature(.IntroFeature), dependencies: [
-            .Project.Features.IntroFeature
+        .demo(baseModule: .feature(.SignInFeature), dependencies: [
+            .Project.Features.SignInFeature
         ]),
     ]
 )

@@ -5,7 +5,7 @@ import SnapKit
 import Then
 import Utility
 
-public class DemoIntroViewController: UIViewController {
+public class DemoSignInViewController: UIViewController {
     private let label = UILabel().then {
         $0.numberOfLines = 0
         $0.textColor = .black

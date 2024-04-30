@@ -1,6 +1,6 @@
 //
-//  IntroViewController.swift
-//  IntroFeature
+//  SignInViewController.swift
+//  SignInFeature
 //
 //  Created by YoungK on 4/14/24.
 //  Copyright © 2024 youngkyu.song. All rights reserved.
@@ -14,9 +14,9 @@ import Then
 import ReactorKit
 import Foundation
 
-public final class IntroViewController: BaseViewController {
+public final class SignInViewController: BaseViewController {
     public var disposeBag = DisposeBag()
-    var introView: IntroView!
+    var introView: SignInView!
     
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -31,16 +31,16 @@ public final class IntroViewController: BaseViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        introView = IntroView(frame: self.view.frame)
+        introView = SignInView(frame: self.view.frame)
         self.view.addSubview(introView)
-        self.reactor = IntroReactor()
+        self.reactor = SignInReactor()
         reactor?.action.onNext(.viewDidLoad)
     }
 
 }
 
-extension IntroViewController: View {
-    public func bind(reactor: IntroReactor) {
+extension SignInViewController: View {
+    public func bind(reactor: SignInReactor) {
         introView.accountTextField.rx.text
             .map { Reactor.Action.setEmail($0) }
             .bind(to: reactor.action)

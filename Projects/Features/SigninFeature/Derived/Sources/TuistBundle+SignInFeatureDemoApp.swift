@@ -8,14 +8,14 @@ import Foundation
 private class BundleFinder {}
 
 extension Foundation.Bundle {
-/// Since IntroFeatureDemoApp is a application, the bundle for classes within this module can be used directly.
+/// Since SignInFeatureDemoApp is a application, the bundle for classes within this module can be used directly.
 static let module = Bundle(for: BundleFinder.self)
 }
 
 // MARK: - Objective-C Bundle Accessor
 
 @objc
-public class IntroFeatureDemoAppResources: NSObject {
+public class SignInFeatureDemoAppResources: NSObject {
 @objc public class var bundle: Bundle {
     return .module
 }

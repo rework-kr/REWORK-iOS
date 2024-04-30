@@ -8,9 +8,9 @@ import Foundation
 private class BundleFinder {}
 
 extension Foundation.Bundle {
-/// Since IntroFeature is a staticFramework, the bundle containing the resources is copied into the final product.
+/// Since SignInFeature is a staticFramework, the bundle containing the resources is copied into the final product.
 static let module: Bundle = {
-    let bundleName = "IntroFeature_IntroFeature"
+    let bundleName = "SignInFeature_SignInFeature"
 
     let candidates = [
         Bundle.main.resourceURL,
@@ -24,14 +24,14 @@ static let module: Bundle = {
             return bundle
         }
     }
-    fatalError("unable to find bundle named IntroFeature_IntroFeature")
+    fatalError("unable to find bundle named SignInFeature_SignInFeature")
 }()
 }
 
 // MARK: - Objective-C Bundle Accessor
 
 @objc
-public class IntroFeatureResources: NSObject {
+public class SignInFeatureResources: NSObject {
 @objc public class var bundle: Bundle {
     return .module
 }

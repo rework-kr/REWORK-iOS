@@ -1,6 +1,6 @@
 //
-//  IntroView.swift
-//  IntroFeature
+//  SignInView.swift
+//  SignInFeature
 //
 //  Created by YoungK on 4/14/24.
 //  Copyright © 2024 youngkyu.song. All rights reserved.
@@ -13,7 +13,7 @@ import SnapKit
 import Then
 import Utility
 
-public final class IntroView: BaseView {
+public final class SignInView: BaseView {
     lazy var logoImageView = UIImageView().then {
         $0.image = DesignSystemAsset.rework.image
     }
@@ -68,7 +68,7 @@ public final class IntroView: BaseView {
     }
 }
 
-private extension IntroView {
+private extension SignInView {
     func addSubViews() {
         self.addSubview(logoImageView)
         self.addSubview(descriptionView)
