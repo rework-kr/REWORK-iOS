@@ -8,6 +8,7 @@
 
 import UIKit
 
+@available(*, deprecated)
 open class BaseView: UIView {
     func addSubViews() {}
     func setLayout() {}
