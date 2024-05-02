@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import Inject
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -12,7 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("didFinishLaunchingWithOptions")
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return false }
         self.window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = DemoSignInViewController()
+        
+        let viewController = Inject.ViewControllerHost(DemoSignInViewController())
+        window?.rootViewController = viewController
         window?.makeKeyAndVisible()
 
         return true

@@ -9,7 +9,7 @@ public class DemoSignInViewController: UIViewController {
     private let label = UILabel().then {
         $0.numberOfLines = 0
         $0.textColor = .black
-        $0.text = "DemoIntroVC"
+        $0.text = "DemoSignInVC"
         $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 14)
     }
     
@@ -24,7 +24,7 @@ public class DemoSignInViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         print("ViewDidLoad")
-        view.backgroundColor = .green
+        view.backgroundColor = .gray
         self.view.addSubview(label)
         label.snp.makeConstraints {
             $0.centerX.centerY.equalToSuperview()
