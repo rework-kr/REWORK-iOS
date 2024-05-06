@@ -14,7 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return false }
         self.window = UIWindow(windowScene: windowScene)
         
-        let viewController = Inject.ViewControllerHost(DemoSignInViewController())
+        let viewController = Inject.ViewControllerHost(
+            UINavigationController(rootViewController: DemoSignInViewController())
+        )
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
 

@@ -11,10 +11,10 @@ import SnapKit
 import Then
 import DesignSystem
 
-class DescriptionView: UIView {
+public class DescriptionView: UIView {
     let backgroundView = UIView().then {
-        $0.layer.cornerRadius = 20
-        $0.backgroundColor = .darkGray
+        $0.layer.cornerRadius = 8
+        $0.backgroundColor = UIColor(hex: "2D2D2D")
     }
     
     //let contentView  = UIView()
@@ -37,19 +37,19 @@ class DescriptionView: UIView {
         $0.textColor = .gray
     }
     
-    var title: String? {
+    public var title: String? {
         didSet {
             titleLabel.text = title
         }
     }
     
-    var content: String? {
+    public var content: String? {
         didSet {
             contentLabel.text = content
         }
     }
     
-    var footer: String? {
+    public var footer: String? {
         didSet {
             footerLabel.text = footer
         }
