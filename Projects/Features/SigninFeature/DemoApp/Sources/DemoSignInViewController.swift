@@ -20,12 +20,6 @@ public class DemoSignInViewController: BaseViewController {
         $0.image = DesignSystemAsset.rework.image
     }
     
-//    let descriptionView = DescriptionView().then {
-//        $0.title = "우리는 효율적으로 일하는 리워크입니다."
-//        $0.content = "리워크는 업무 효울성을 위한 기록용 아카이빙 서비스를 제공하고 있어요\n소규모 회원을 위한 서비스 품질을 위해 폐쇄성 있는 서비스를 제공해요"
-//        //$0.footer = "이메일을 기재해주시면 컨택 메일을 드릴게요"
-//    }
-    
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 20
@@ -109,7 +103,6 @@ extension DemoSignInViewController {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(logoImageView)
-        //contentView.addSubview(descriptionView)
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(accountTextField)
         stackView.addArrangedSubview(passwordTextField)
@@ -185,16 +178,6 @@ extension DemoSignInViewController: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-//        accountTextField.rx.controlEvent(.editingDidBegin)
-//            .map { _ in Reactor.Action.textFieldEditingDidBegin }
-//            .bind(to: reactor.action)
-//            .disposed(by: disposeBag)
-//                
-//        accountTextField.rx.controlEvent(.editingDidEnd)
-//            .map { _ in Reactor.Action.textFieldEditingDidEnd }
-//            .bind(to: reactor.action)
-//            .disposed(by: disposeBag)
-        
         accountTextField.rx.text
             .map { Reactor.Action.setEmail($0) }
             .bind(to: reactor.action)
@@ -202,43 +185,61 @@ extension DemoSignInViewController: View {
         
         reactor.state
             .map { $0.viewDidLoaded }
-            .subscribe(onNext: { [weak self] viewDidLoaded in
-                guard let self else { return }
-                UIView.animate(withDuration: 1.5) {
-                    self.accountTextField.alpha = viewDidLoaded ? CGFloat(1.0) : CGFloat(0)
-                }
+            .withUnretained(self)
+            .subscribe(onNext: { owner, viewDidLoaded in
+                owner.updateAccountTextFieldAlpha()
             }).disposed(by: disposeBag)
         
         reactor.state.map(\.keyboardHeight)
             .distinctUntilChanged()
             .withUnretained(self)
             .subscribe(onNext: { owner, keyboardHeight in
-                UIView.animate(withDuration: 0.2) {
-                    let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-                    owner.scrollView.contentInset = contentInset
-                    owner.scrollView.scrollIndicatorInsets = contentInset
-                }
+                owner.updateViewInsetForKeyboardHeight(keyboardHeight)
             }).disposed(by: disposeBag)
-        
         
         reactor.state
             .map { $0.validationResult }
             .map { return $0 == .ok ? true : false }
             .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] emailIsValid in
-                guard let self else { return }
-                loginButton.isEnabled = emailIsValid
-                loginButton.layer.backgroundColor = emailIsValid ? UIColor(hex: "2D2D2D").cgColor : UIColor.gray.cgColor
-                UIView.animate(withDuration: 0.3) {
-                    self.passwordTextField.alpha = emailIsValid ? CGFloat(1.0) : CGFloat(0)
-                    self.passwordTextField.transform = emailIsValid ?
-                    CGAffineTransform(translationX: 0, y: 0)
-                    : CGAffineTransform(translationX: 0, y: 20)
-                }
+            .withUnretained(self)
+            .subscribe(onNext: { owner, emailIsValid in
+                owner.updateLoginButtonState(emailIsValid)
+                owner.updatePasswordTextFieldState(emailIsValid)
             }).disposed(by: disposeBag)
         
     }
     
+}
+
+private extension DemoSignInViewController {
+    func updateAccountTextFieldAlpha() {
+        UIView.animate(withDuration: 1.5) { [weak self] in
+            self?.accountTextField.alpha = 1
+        }
+    }
+    
+    func updateViewInsetForKeyboardHeight(_ keyboardHeight: CGFloat) {
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+            self?.scrollView.contentInset = contentInset
+            self?.scrollView.scrollIndicatorInsets = contentInset
+        }
+    }
+    
+    func updateLoginButtonState(_ isEnabled: Bool) {
+        loginButton.isEnabled = isEnabled
+        loginButton.layer.backgroundColor = isEnabled ?
+        UIColor(hex: "2D2D2D").cgColor : UIColor.gray.cgColor
+    }
+    
+    func updatePasswordTextFieldState(_ isEnabled: Bool) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.passwordTextField.alpha = isEnabled ? CGFloat(1.0) : CGFloat(0)
+            self?.passwordTextField.transform = isEnabled ?
+            CGAffineTransform(translationX: 0, y: 0)
+            : CGAffineTransform(translationX: 0, y: 20)
+        }
+    }
 }
 
 extension DemoSignInViewController: UITextFieldDelegate {
