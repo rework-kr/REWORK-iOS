@@ -14,22 +14,24 @@ public final class DemoSignUpReactor: Reactor {
         case keyboardWillShow(CGFloat)
         case keyboardWillHide
         case setEmail(String?)
-        case loginButtonDidTap
+        case signUpButtonDidTap
     }
     
     public enum Mutation {
         case viewDidLoaded
         case setKeyboardHeight(CGFloat)
         case setEmailInfo((email: String, validationResult: ValidationResult))
-        case isLoggedIn(Bool)
+        case signUpResult(Bool)
+        case setLoading(Bool)
     }
     
     public struct State {
-        public var keyboardHeight: CGFloat
-        public var email: String
-        public var viewDidLoaded: Bool
-        public var validationResult: ValidationResult?
-        public var loggedIn: Bool
+        var keyboardHeight: CGFloat
+        var email: String
+        var viewDidLoaded: Bool
+        var validationResult: ValidationResult?
+        var signUpState: Bool
+        var isLoading: Bool
     }
     
     public init() {
@@ -37,12 +39,12 @@ public final class DemoSignUpReactor: Reactor {
             keyboardHeight: 0,
             email: "",
             viewDidLoaded: false,
-            loggedIn: false
+            signUpState: false,
+            isLoading: false
         )
     }
     
     public func mutate(action: Action) -> Observable<Mutation> {
-        print("✅ mutate 호출됨", action)
         switch action {
         case .viewDidLoad:
             return .just(.viewDidLoaded)
@@ -57,14 +59,16 @@ public final class DemoSignUpReactor: Reactor {
             guard let email else { return .empty() }
             return .just(.setEmailInfo((email, email.validEmail)))
             
-            
-        case .loginButtonDidTap:
-            return fetchUserInfo()
+        case .signUpButtonDidTap:
+            return .concat([
+                .just(.setLoading(true)),
+                signUp().delay(.seconds(1), scheduler: MainScheduler.instance),
+                .just(.setLoading(false))
+            ])
         }
     }
     
     public func reduce(state: State, mutation: Mutation) -> State {
-        print("🚀 reduce 호출됨", mutation)
         var newState = state
         switch mutation {
         case .viewDidLoaded:
@@ -77,8 +81,11 @@ public final class DemoSignUpReactor: Reactor {
             newState.email = info.email
             newState.validationResult = info.validationResult
             
-        case .isLoggedIn(let isLoggedIn):
-            newState.loggedIn = isLoggedIn
+        case .signUpResult(let result):
+            newState.signUpState = result
+            
+        case .setLoading(let isLoading):
+            newState.isLoading = isLoading
         }
         return newState
     }
@@ -86,8 +93,8 @@ public final class DemoSignUpReactor: Reactor {
 }
 
 private extension DemoSignUpReactor {
-    func fetchUserInfo() -> Observable<Mutation> {
-        return .just(Mutation.isLoggedIn(true))
+    func signUp() -> Observable<Mutation> {
+        return .just(Mutation.signUpResult(true))
     }
 }
 

@@ -16,6 +16,15 @@ public class DemoSignUpViewController: BaseViewController {
     let scrollView = UIScrollView()
     let contentView = UIView()
     
+    let customNavigationBar = UIView().then {
+        $0.backgroundColor = .white
+    }
+    
+    let backButton = UIButton().then {
+        $0.setImage(DesignSystemAsset.arrowBack.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        $0.tintColor = UIColor(hex: "222222")
+    }
+    
     let logoImageView = UIImageView().then {
         $0.image = DesignSystemAsset.rework.image
     }
@@ -72,14 +81,14 @@ public class DemoSignUpViewController: BaseViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        print("ViewDidLoad")
+        print("회원가입뷰 ViewDidLoad")
         addSubViews()
         setLayout()
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
         self.reactor = DemoSignUpReactor()
-        reactor?.action.onNext(.viewDidLoad)
         emailTextField.delegate = self
+        navigationController?.delegate = self
     }
 }
 
@@ -92,6 +101,8 @@ extension DemoSignUpViewController {
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(emailTextField)
         contentView.addSubview(signupButton)
+        self.view.addSubview(customNavigationBar)
+        customNavigationBar.addSubview(backButton)
     }
     
     func setLayout() {
@@ -137,11 +148,34 @@ extension DemoSignUpViewController {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().offset(-30)
         }
+        
+        customNavigationBar.snp.makeConstraints {
+            $0.height.equalTo(48)
+            $0.top.equalToSuperview().offset(STATUS_BAR_HEIGHT())
+            $0.horizontalEdges.equalToSuperview()
+        }
+        
+        backButton.snp.makeConstraints {
+            $0.width.height.equalTo(32)
+            $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().offset(20)
+        }
     }
 }
 
 extension DemoSignUpViewController: View {
     public func bind(reactor: DemoSignUpReactor) {
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+        
+        backButton.rx.tap
+            .withUnretained(self)
+            .subscribe { owner, _ in
+                owner.navigationController?.popViewController(animated: true)
+            }.disposed(by: disposeBag)
+    }
+    
+    private func bindAction(reactor: DemoSignUpReactor) {
         let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
             .compactMap { notification in
                 notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
@@ -155,11 +189,23 @@ extension DemoSignUpViewController: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        self.rx.methodInvoked(#selector(viewDidLoad))
+            .map { _ in Reactor.Action.viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         emailTextField.rx.text
             .map { Reactor.Action.setEmail($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        signupButton.rx.tap
+            .map { Reactor.Action.signUpButtonDidTap }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+
+    private func bindState(reactor: DemoSignUpReactor) {
         reactor.state.map(\.keyboardHeight)
             .distinctUntilChanged()
             .withUnretained(self)
@@ -167,8 +213,7 @@ extension DemoSignUpViewController: View {
                 owner.updateViewInsetForKeyboardHeight(keyboardHeight)
             }).disposed(by: disposeBag)
         
-        reactor.state
-            .map { $0.validationResult }
+        reactor.state.map(\.validationResult)
             .map { return $0 == .ok ? true : false }
             .distinctUntilChanged()
             .withUnretained(self)
@@ -176,8 +221,23 @@ extension DemoSignUpViewController: View {
                 owner.updateSignUpButtonState(emailIsValid)
             }).disposed(by: disposeBag)
         
+        reactor.state.map(\.signUpState)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe { owner, state in
+                // TODO: 로그인 결과에 따른 화면 전환
+                print("🚀signUpState:", state)
+            }.disposed(by: disposeBag)
+        
+        // TODO: 로딩 인디케이터 바인딩
+        reactor.state.map(\.isLoading)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { onwer, isLoading in
+                print("🚀isLoading:", isLoading)
+            }).disposed(by: disposeBag)
+
     }
-    
 }
 
 private extension DemoSignUpViewController {
@@ -202,3 +262,15 @@ extension DemoSignUpViewController: UITextFieldDelegate {
     }
 }
 
+extension DemoSignUpViewController: UINavigationControllerDelegate {
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        if viewController === self {
+            // 이전 뷰컨트롤러가 현재 뷰컨트롤러와 같은 경우, 스와이프로 뒤로가기 동작을 활성화합니다.
+            navigationController.interactivePopGestureRecognizer?.delegate = navigationController as? UIGestureRecognizerDelegate
+            navigationController.interactivePopGestureRecognizer?.isEnabled = true
+        } else {
+            // 이전 뷰컨트롤러가 다른 경우, 스와이프로 뒤로가기 동작을 비활성화합니다.
+            navigationController.interactivePopGestureRecognizer?.isEnabled = false
+        }
+    }
+}

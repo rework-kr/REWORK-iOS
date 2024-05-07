@@ -38,7 +38,6 @@ public final class DemoSignInReactor: Reactor {
     }
     
     public func mutate(action: Action) -> Observable<Mutation> {
-        print("✅ mutate 호출됨", action)
         switch action {
         case .viewDidLoad:
             return .just(.viewDidLoaded)
@@ -60,7 +59,6 @@ public final class DemoSignInReactor: Reactor {
     }
     
     public func reduce(state: State, mutation: Mutation) -> State {
-        print("🚀 reduce 호출됨", mutation)
         var newState = state
         switch mutation {
         case .viewDidLoaded:

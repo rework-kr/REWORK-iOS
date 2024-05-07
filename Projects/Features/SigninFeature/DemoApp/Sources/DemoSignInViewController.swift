@@ -92,7 +92,6 @@ public class DemoSignInViewController: BaseViewController {
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
         self.reactor = DemoSignInReactor()
-        reactor?.action.onNext(.viewDidLoad)
         accountTextField.delegate = self
         passwordTextField.delegate = self
     }
@@ -178,13 +177,24 @@ extension DemoSignInViewController: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        self.rx.methodInvoked(#selector(viewDidLoad))
+            .map { _ in Reactor.Action.viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         accountTextField.rx.text
             .map { Reactor.Action.setEmail($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map { $0.viewDidLoaded }
+        signupButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                let signUpViewController = DemoSignUpViewController()
+                owner.navigationController?.pushViewController(signUpViewController, animated: true)
+            }).disposed(by: disposeBag)
+        
+        reactor.state.map(\.viewDidLoaded)
             .withUnretained(self)
             .subscribe(onNext: { owner, viewDidLoaded in
                 owner.updateAccountTextFieldAlpha()
@@ -197,8 +207,7 @@ extension DemoSignInViewController: View {
                 owner.updateViewInsetForKeyboardHeight(keyboardHeight)
             }).disposed(by: disposeBag)
         
-        reactor.state
-            .map { $0.validationResult }
+        reactor.state.map(\.validationResult)
             .map { return $0 == .ok ? true : false }
             .distinctUntilChanged()
             .withUnretained(self)
