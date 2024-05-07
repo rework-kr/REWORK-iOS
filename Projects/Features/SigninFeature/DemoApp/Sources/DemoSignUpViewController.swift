@@ -10,7 +10,7 @@ import RxCocoa
 import ReactorKit
 import RxKeyboard
 
-public class DemoSignInViewController: BaseViewController {
+public class DemoSignUpViewController: BaseViewController {
     public var disposeBag = DisposeBag()
     
     let scrollView = UIScrollView()
@@ -20,12 +20,24 @@ public class DemoSignInViewController: BaseViewController {
         $0.image = DesignSystemAsset.rework.image
     }
     
-    let stackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.spacing = 20
+    let titleLabel = UILabel().then {
+        $0.numberOfLines = 0
+        $0.textColor = UIColor(hex: "222222")
+        $0.text = "우리는 효율적으로 일하는 리워크입니다"
+        $0.font = DesignSystemFontFamily.Pretendard.bold.font(size: 16)
+        $0.textAlignment = .center
     }
     
-    let accountTextField = UITextField().then {
+    private let descriptionLabel = UILabel().then {
+        $0.numberOfLines = 0
+        $0.textColor = UIColor(hex: "222222")
+        $0.text = "리워크는 업무 효율성을 위한 기록용 아카이빙 서비스를 제공하고 있어요\n소규모 회원을 위한 서비스 품질을 위해 폐쇄성 있는 서비스를 제공해요"
+        $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 10)
+        $0.textAlignment = .center
+
+    }
+    
+    let emailTextField = UITextField().then {
         $0.keyboardType = .emailAddress
         $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 12)
         $0.attributedPlaceholder = NSAttributedString(
@@ -40,38 +52,12 @@ public class DemoSignInViewController: BaseViewController {
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor(hex: "DEDEDE").cgColor
         $0.horizontalPadding(10)
-        $0.alpha = 0
-    }
-    
-    let passwordTextField = UITextField().then {
-        $0.isSecureTextEntry = true
-        $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 12)
-        $0.attributedPlaceholder = NSAttributedString(
-            string: "비밀번호를 입력해주세요",
-            attributes: [
-                .font: DesignSystemFontFamily.Pretendard.medium.font(size: 10),
-                .foregroundColor: UIColor(hex: "B2BBC3")
-            ]
-        )
-        $0.layer.cornerRadius = 20
-        $0.layer.masksToBounds = true
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor(hex: "DEDEDE").cgColor
-        $0.horizontalPadding(10)
-        $0.alpha = 0
     }
     
     let signupButton = UIButton().then {
-        $0.setTitle(" 회원 가입 | 리워크가 처음이신가요? 이메일을 통해 컨택 메일을 드릴게요", for: .normal)
-        $0.setTitleColor(UIColor(hex: "B2BBC3"), for: .normal)
-        $0.setTitleColor(.white, for: .highlighted)
-        $0.titleLabel?.font = DesignSystemFontFamily.Pretendard.bold.font(size: 10)
-    }
-    
-    let loginButton = UIButton().then {
         $0.layer.cornerRadius = 20
         $0.layer.backgroundColor = UIColor(hex: "2D2D2D").cgColor
-        $0.setTitle("로그인", for: .normal)
+        $0.setTitle("회원가입", for: .normal)
         $0.setTitleColor(.white, for: .normal)
         $0.titleLabel?.font = DesignSystemFontFamily.Pretendard.medium.font(size: 16)
     }
@@ -91,27 +77,24 @@ public class DemoSignInViewController: BaseViewController {
         setLayout()
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
-        self.reactor = DemoSignInReactor()
+        self.reactor = DemoSignUpReactor()
         reactor?.action.onNext(.viewDidLoad)
-        accountTextField.delegate = self
-        passwordTextField.delegate = self
+        emailTextField.delegate = self
     }
 }
 
-extension DemoSignInViewController {
+extension DemoSignUpViewController {
     func addSubViews() {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(logoImageView)
-        contentView.addSubview(stackView)
-        stackView.addArrangedSubview(accountTextField)
-        stackView.addArrangedSubview(passwordTextField)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(descriptionLabel)
+        contentView.addSubview(emailTextField)
         contentView.addSubview(signupButton)
-        contentView.addSubview(loginButton)
     }
     
     func setLayout() {
-        let stackViewHeight: CGFloat = 120 // accountTextField Height(50) + passwordTextField Height(50) + spacing(20)
         let contentViewHeight: CGFloat = APP_HEIGHT() - STATUS_BAR_HEIGHT() - SAFEAREA_BOTTOM_HEIGHT()
         self.view.backgroundColor = .white
 
@@ -130,32 +113,26 @@ extension DemoSignInViewController {
         logoImageView.snp.makeConstraints {
             $0.width.height.equalTo(50)
             $0.centerX.equalToSuperview()
-            let stackViewTop = (contentViewHeight / 2) - (stackViewHeight / 2)
-            let centerY = stackViewTop / 2
-            $0.centerY.equalTo(stackView.snp.top).offset(-centerY)
+            $0.bottom.equalTo(titleLabel.snp.top).offset(-30)
         }
         
-        stackView.snp.makeConstraints {
+        titleLabel.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(descriptionLabel.snp.top).offset(-15)
+        }
+        
+        descriptionLabel.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalTo(emailTextField.snp.top).offset(-30)
+        }
+        
+        emailTextField.snp.makeConstraints {
+            $0.height.equalTo(50)
             $0.centerX.centerY.equalToSuperview()
-        }
-        
-        accountTextField.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.top.equalToSuperview()
-        }
-        
-        passwordTextField.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.bottom.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         signupButton.snp.makeConstraints {
-            $0.bottom.equalTo(self.loginButton.snp.top).offset(-20)
-            $0.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        loginButton.snp.makeConstraints {
             $0.height.equalTo(50)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().offset(-30)
@@ -163,8 +140,8 @@ extension DemoSignInViewController {
     }
 }
 
-extension DemoSignInViewController: View {
-    public func bind(reactor: DemoSignInReactor) {
+extension DemoSignUpViewController: View {
+    public func bind(reactor: DemoSignUpReactor) {
         let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
             .compactMap { notification in
                 notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
@@ -178,17 +155,10 @@ extension DemoSignInViewController: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        accountTextField.rx.text
+        emailTextField.rx.text
             .map { Reactor.Action.setEmail($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
-        reactor.state
-            .map { $0.viewDidLoaded }
-            .withUnretained(self)
-            .subscribe(onNext: { owner, viewDidLoaded in
-                owner.updateAccountTextFieldAlpha()
-            }).disposed(by: disposeBag)
         
         reactor.state.map(\.keyboardHeight)
             .distinctUntilChanged()
@@ -203,21 +173,14 @@ extension DemoSignInViewController: View {
             .distinctUntilChanged()
             .withUnretained(self)
             .subscribe(onNext: { owner, emailIsValid in
-                owner.updateLoginButtonState(emailIsValid)
-                owner.updatePasswordTextFieldState(emailIsValid)
+                owner.updateSignUpButtonState(emailIsValid)
             }).disposed(by: disposeBag)
         
     }
     
 }
 
-private extension DemoSignInViewController {
-    func updateAccountTextFieldAlpha() {
-        UIView.animate(withDuration: 1.5) { [weak self] in
-            self?.accountTextField.alpha = 1
-        }
-    }
-    
+private extension DemoSignUpViewController {
     func updateViewInsetForKeyboardHeight(_ keyboardHeight: CGFloat) {
         UIView.animate(withDuration: 0.2) { [weak self] in
             let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
@@ -226,29 +189,15 @@ private extension DemoSignInViewController {
         }
     }
     
-    func updateLoginButtonState(_ isEnabled: Bool) {
-        loginButton.isEnabled = isEnabled
-        loginButton.layer.backgroundColor = isEnabled ?
+    func updateSignUpButtonState(_ isEnabled: Bool) {
+        signupButton.isEnabled = isEnabled
+        signupButton.layer.backgroundColor = isEnabled ?
         UIColor(hex: "2D2D2D").cgColor : UIColor.gray.cgColor
-    }
-    
-    func updatePasswordTextFieldState(_ isEnabled: Bool) {
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.passwordTextField.alpha = isEnabled ? CGFloat(1.0) : CGFloat(0)
-            self?.passwordTextField.transform = isEnabled ?
-            CGAffineTransform(translationX: 0, y: 0)
-            : CGAffineTransform(translationX: 0, y: 20)
-        }
     }
 }
 
-extension DemoSignInViewController: UITextFieldDelegate {
+extension DemoSignUpViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == accountTextField && reactor?.currentState.validationResult == .ok {
-            passwordTextField.becomeFirstResponder()
-        } else if textField == passwordTextField {
-            passwordTextField.resignFirstResponder()
-        }
         return true
     }
 }

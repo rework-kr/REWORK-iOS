@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(windowScene: windowScene)
         
         let viewController = Inject.ViewControllerHost(
-            UINavigationController(rootViewController: DemoSignInViewController())
+            UINavigationController(rootViewController: DemoSignUpViewController())
         )
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
