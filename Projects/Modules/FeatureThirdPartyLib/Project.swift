@@ -16,6 +16,7 @@ let project = Project.module(
         .SPM.RxMoya,
         .SPM.Moya,
         .SPM.Kingfisher,
-        .SPM.Inject
+        .SPM.Inject,
+        .SPM.NVActivityIndicatorView
     ]
 )

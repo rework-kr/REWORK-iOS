@@ -19,4 +19,5 @@ public extension TargetDependency.SPM {
     static let Quick = TargetDependency.external(name: "Quick")
     static let Nimble = TargetDependency.external(name: "Nimble")
     static let Inject = TargetDependency.external(name: "Inject")
+    static let NVActivityIndicatorView = TargetDependency.external(name: "NVActivityIndicatorView")
 }
