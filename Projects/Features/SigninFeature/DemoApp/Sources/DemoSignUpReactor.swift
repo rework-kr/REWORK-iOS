@@ -62,7 +62,7 @@ public final class DemoSignUpReactor: Reactor {
         case .signUpButtonDidTap:
             return .concat([
                 .just(.setLoading(true)),
-                signUp().delay(.seconds(1), scheduler: MainScheduler.instance),
+                signUp().delay(.seconds(2), scheduler: MainScheduler.instance),
                 .just(.setLoading(false))
             ])
         }

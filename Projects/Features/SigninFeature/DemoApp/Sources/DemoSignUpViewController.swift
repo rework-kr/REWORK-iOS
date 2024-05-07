@@ -9,6 +9,7 @@ import RxSwift
 import RxCocoa
 import ReactorKit
 import RxKeyboard
+import NVActivityIndicatorView
 
 public class DemoSignUpViewController: BaseViewController {
     public var disposeBag = DisposeBag()
@@ -71,6 +72,17 @@ public class DemoSignUpViewController: BaseViewController {
         $0.titleLabel?.font = DesignSystemFontFamily.Pretendard.medium.font(size: 16)
     }
     
+    lazy var loadingBackgroundView = UIView().then {
+        $0.backgroundColor = .black.withAlphaComponent(0.3)
+        $0.isHidden = true
+    }
+    
+    lazy var activityIndicator = NVActivityIndicatorView(
+        frame: .init(x: 0, y: 0, width: 50, height: 50))
+        .then {
+        $0.type = .ballPulseSync
+    }
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -103,6 +115,8 @@ extension DemoSignUpViewController {
         contentView.addSubview(signupButton)
         self.view.addSubview(customNavigationBar)
         customNavigationBar.addSubview(backButton)
+        self.view.addSubview(loadingBackgroundView)
+        loadingBackgroundView.addSubview(activityIndicator)
     }
     
     func setLayout() {
@@ -159,6 +173,14 @@ extension DemoSignUpViewController {
             $0.width.height.equalTo(32)
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().offset(20)
+        }
+        
+        loadingBackgroundView.snp.makeConstraints {
+            $0.verticalEdges.horizontalEdges.equalToSuperview()
+        }
+        
+        activityIndicator.snp.makeConstraints {
+            $0.centerX.centerY.equalToSuperview()
         }
     }
 }
@@ -233,8 +255,9 @@ extension DemoSignUpViewController: View {
         reactor.state.map(\.isLoading)
             .distinctUntilChanged()
             .withUnretained(self)
-            .subscribe(onNext: { onwer, isLoading in
+            .subscribe(onNext: { owner, isLoading in
                 print("🚀isLoading:", isLoading)
+                owner.loadingViewIsAppear(isLoading)
             }).disposed(by: disposeBag)
 
     }
@@ -253,6 +276,16 @@ private extension DemoSignUpViewController {
         signupButton.isEnabled = isEnabled
         signupButton.layer.backgroundColor = isEnabled ?
         UIColor(hex: "2D2D2D").cgColor : UIColor.gray.cgColor
+    }
+    
+    func loadingViewIsAppear(_ isLoading: Bool) {
+        if isLoading {
+            loadingBackgroundView.isHidden = false
+            activityIndicator.startAnimating()
+        } else {
+            loadingBackgroundView.isHidden = true
+            activityIndicator.stopAnimating()
+        }
     }
 }
 
