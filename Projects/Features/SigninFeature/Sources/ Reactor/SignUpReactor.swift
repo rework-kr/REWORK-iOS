@@ -2,11 +2,7 @@ import UIKit
 import ReactorKit
 import RxSwift
 
-public enum ValidationResult: Equatable {
-    case ok, no(_ msg: String)
-}
-
-public final class SignInReactor: Reactor {
+public final class SignUpReactor: Reactor {
     public var initialState: State
     
     public enum Action {
@@ -14,14 +10,15 @@ public final class SignInReactor: Reactor {
         case keyboardWillShow(CGFloat)
         case keyboardWillHide
         case setEmail(String?)
-        case loginButtonDidTap
+        case signUpButtonDidTap
     }
     
     public enum Mutation {
         case viewDidLoaded
         case setKeyboardHeight(CGFloat)
         case setEmailInfo((email: String, validationResult: ValidationResult))
-        case isLoggedIn(Bool)
+        case signUpResult(Bool)
+        case setLoading(Bool)
     }
     
     public struct State {
@@ -29,7 +26,8 @@ public final class SignInReactor: Reactor {
         var email: String
         var viewDidLoaded: Bool
         var validationResult: ValidationResult?
-        var loggedIn: Bool
+        var signUpState: Bool
+        var isLoading: Bool
     }
     
     public init() {
@@ -37,7 +35,8 @@ public final class SignInReactor: Reactor {
             keyboardHeight: 0,
             email: "",
             viewDidLoaded: false,
-            loggedIn: false
+            signUpState: false,
+            isLoading: false
         )
     }
     
@@ -56,9 +55,12 @@ public final class SignInReactor: Reactor {
             guard let email else { return .empty() }
             return .just(.setEmailInfo((email, email.validEmail)))
             
-            
-        case .loginButtonDidTap:
-            return fetchUserInfo()
+        case .signUpButtonDidTap:
+            return .concat([
+                .just(.setLoading(true)),
+                signUp().delay(.seconds(2), scheduler: MainScheduler.instance),
+                .just(.setLoading(false))
+            ])
         }
     }
     
@@ -75,31 +77,19 @@ public final class SignInReactor: Reactor {
             newState.email = info.email
             newState.validationResult = info.validationResult
             
-        case .isLoggedIn(let isLoggedIn):
-            newState.loggedIn = isLoggedIn
+        case .signUpResult(let result):
+            newState.signUpState = result
+            
+        case .setLoading(let isLoading):
+            newState.isLoading = isLoading
         }
         return newState
     }
     
 }
 
-private extension SignInReactor {
-    func fetchUserInfo() -> Observable<Mutation> {
-        return .just(Mutation.isLoggedIn(true))
-    }
-}
-
-extension String {
-    var isNotEmpty: Bool {
-        return !self.isEmpty
-    }
-
-    var validEmail: ValidationResult {
-        return self.isEmail ? ValidationResult.ok : ValidationResult.no("This is not an email format.")
-    }
-
-    var isEmail: Bool {
-        let EMAIL_REGEX = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        return NSPredicate(format: "SELF MATCHES %@", EMAIL_REGEX).evaluate(with: self)
+private extension SignUpReactor {
+    func signUp() -> Observable<Mutation> {
+        return .just(Mutation.signUpResult(true))
     }
 }
