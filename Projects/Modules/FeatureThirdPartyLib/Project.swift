@@ -10,7 +10,6 @@ let project = Project.module(
         .SPM.SnapKit,
         .SPM.Then,
         .SPM.RxSwift,
-        .SPM.RxCocoa,
         .SPM.RxDataSources,
         .SPM.RxKeyboard,
         .SPM.RxMoya,
