@@ -10,7 +10,7 @@ import ReactorKit
 import RxKeyboard
 import NVActivityIndicatorView
 
-public class SignUpViewController: BaseViewController {
+public class SignUpViewController: BaseViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     public var disposeBag = DisposeBag()
     
     let scrollView = UIScrollView()
@@ -100,6 +100,12 @@ public class SignUpViewController: BaseViewController {
         self.reactor = SignUpReactor()
         emailTextField.delegate = self
         navigationController?.delegate = self
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("!!! ViewDidDisappear")
     }
 }
 
@@ -296,18 +302,5 @@ private extension SignUpViewController {
 extension SignUpViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return true
-    }
-}
-
-extension SignUpViewController: UINavigationControllerDelegate {
-    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if viewController === self {
-            // 이전 뷰컨트롤러가 현재 뷰컨트롤러와 같은 경우, 스와이프로 뒤로가기 동작을 활성화합니다.
-            navigationController.interactivePopGestureRecognizer?.delegate = navigationController as? UIGestureRecognizerDelegate
-            navigationController.interactivePopGestureRecognizer?.isEnabled = true
-        } else {
-            // 이전 뷰컨트롤러가 다른 경우, 스와이프로 뒤로가기 동작을 비활성화합니다.
-            navigationController.interactivePopGestureRecognizer?.isEnabled = false
-        }
     }
 }
