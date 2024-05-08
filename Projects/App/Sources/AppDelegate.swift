@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import IntroFeature
+import SignInFeature
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
