@@ -1,7 +1,6 @@
 import UIKit
 import DesignSystem
 import BaseFeature
-import SignInFeature
 import SnapKit
 import Then
 import Utility
@@ -73,6 +72,7 @@ public class DemoSignInViewController: BaseViewController {
         $0.layer.backgroundColor = UIColor(hex: "2D2D2D").cgColor
         $0.setTitle("로그인", for: .normal)
         $0.setTitleColor(.white, for: .normal)
+        $0.setTitleColor(.gray, for: .highlighted)
         $0.titleLabel?.font = DesignSystemFontFamily.Pretendard.medium.font(size: 16)
     }
     

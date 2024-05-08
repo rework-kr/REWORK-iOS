@@ -1,9 +1,45 @@
-//
-//  DemoSignUpAfterReactor.swift
-//  SignInFeatureDemoApp
-//
-//  Created by YoungK on 5/7/24.
-//  Copyright © 2024 youngkyu.song. All rights reserved.
-//
+import UIKit
+import ReactorKit
+import RxSwift
 
-import Foundation
+public final class DemoSignUpAfterReactor: Reactor {
+    public var initialState: State
+    
+    public enum Action {
+        case viewDidLoad
+
+    }
+    
+    public enum Mutation {
+        case viewDidLoaded
+
+    }
+    
+    public struct State {
+        var viewDidLoaded: Bool
+    }
+    
+    public init() {
+        self.initialState = .init(
+            viewDidLoaded: false
+        )
+    }
+    
+    public func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .viewDidLoad:
+            return .just(.viewDidLoaded)
+            
+        }
+    }
+    
+    public func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        switch mutation {
+        case .viewDidLoaded:
+            newState.viewDidLoaded = true
+        }
+        return newState
+    }
+    
+}

@@ -1,7 +1,6 @@
 import UIKit
 import DesignSystem
 import BaseFeature
-import SignInFeature
 import SnapKit
 import Then
 import Utility
@@ -244,14 +243,14 @@ extension DemoSignUpViewController: View {
             }).disposed(by: disposeBag)
         
         reactor.state.map(\.signUpState)
+            .filter { $0 == true }
             .distinctUntilChanged()
             .withUnretained(self)
             .subscribe { owner, state in
-                // TODO: 로그인 결과에 따른 화면 전환
-                print("🚀signUpState:", state)
+                let email = owner.emailTextField.text
+                owner.showSignUpAfterViewController(email: email ?? "")
             }.disposed(by: disposeBag)
         
-        // TODO: 로딩 인디케이터 바인딩
         reactor.state.map(\.isLoading)
             .distinctUntilChanged()
             .withUnretained(self)
@@ -276,6 +275,11 @@ private extension DemoSignUpViewController {
         signupButton.isEnabled = isEnabled
         signupButton.layer.backgroundColor = isEnabled ?
         UIColor(hex: "2D2D2D").cgColor : UIColor.gray.cgColor
+    }
+    
+    func showSignUpAfterViewController(email: String) {
+        let signUpAfterViewController = DemoSignUpAfterViewController(email: email)
+        navigationController?.pushViewController(signUpAfterViewController, animated: true)
     }
     
     func loadingViewIsAppear(_ isLoading: Bool) {

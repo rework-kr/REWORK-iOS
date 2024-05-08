@@ -2,6 +2,10 @@ import UIKit
 import ReactorKit
 import RxSwift
 
+public enum ValidationResult: Equatable {
+    case ok, no(_ msg: String)
+}
+
 public final class DemoSignInReactor: Reactor {
     public var initialState: State
     
@@ -82,5 +86,20 @@ public final class DemoSignInReactor: Reactor {
 private extension DemoSignInReactor {
     func fetchUserInfo() -> Observable<Mutation> {
         return .just(Mutation.isLoggedIn(true))
+    }
+}
+
+extension String {
+    var isNotEmpty: Bool {
+        return !self.isEmpty
+    }
+
+    var validEmail: ValidationResult {
+        return self.isEmail ? ValidationResult.ok : ValidationResult.no("This is not an email format.")
+    }
+
+    var isEmail: Bool {
+        let EMAIL_REGEX = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        return NSPredicate(format: "SELF MATCHES %@", EMAIL_REGEX).evaluate(with: self)
     }
 }
