@@ -20,13 +20,19 @@ public class DemoHomeViewController: BaseViewController {
         $0.spacing = 25
     }
     
-    let todayAgendaButton = UIButton().then {
-        $0.addSubview(ImageTextView.makeUIView(subTitle: "내 목표", title: "오늘의 아젠다"))
+    let todayAgendaButton = ImageTextButton().then {
+        $0.setImage(DesignSystemAsset.Home.bookRoundedRectangle.image)
+        $0.setTitle("오늘의 아젠다")
+        $0.setSubTitle("내 목표")
     }
     
-    let growUpButton = UIButton().then {
-        $0.addSubview(ImageTextView.makeUIView(subTitle: "성장일지", title: "성과 확인하기"))
+    let growUpButton = ImageTextButton().then {
+        $0.setImage(DesignSystemAsset.Home.sparkRoundedRectangle.image)
+        $0.setTitle("성과 확인하기")
+        $0.setSubTitle("성장일지")
     }
+    
+    let calendarVisibleButton = CalendarVisibleButton()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -54,6 +60,7 @@ extension DemoHomeViewController {
         contentView.addSubview(hStackView)
         hStackView.addArrangedSubview(todayAgendaButton)
         hStackView.addArrangedSubview(growUpButton)
+        contentView.addSubview(calendarVisibleButton)
     }
     
     func setLayout() {
@@ -87,15 +94,46 @@ extension DemoHomeViewController {
             $0.height.equalTo(40)
         }
         
-        
-        
+        calendarVisibleButton.snp.makeConstraints {
+            $0.top.equalTo(hStackView.snp.bottom).offset(30)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(40)
+        }
         
     }
 }
 
 extension DemoHomeViewController: View {
     public func bind(reactor: DemoHomeReactor) {
-       
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+        
+        todayAgendaButton.button.rx.tap
+            .withUnretained(self)
+            .bind { owner, _ in
+                print("todayAgendaButton")
+            }.disposed(by: disposeBag)
+        
+        growUpButton.button.rx.tap
+            .withUnretained(self)
+            .bind { owner, _ in
+                print("growUpButton")
+            }.disposed(by: disposeBag)
+        
+        calendarVisibleButton.button.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                owner.calendarVisibleButton.toggleCalendarVisible()
+                print("calendarVisibleButton -", owner.calendarVisibleButton.isVisibleCalendar)
+            }).disposed(by: disposeBag)
+        
+    }
+    
+    private func bindAction(reactor: DemoHomeReactor) {
+        
+    }
+    
+    private func bindState(reactor: DemoHomeReactor) {
         
     }
     
