@@ -34,6 +34,8 @@ public class DemoHomeViewController: BaseViewController {
     
     let calendarVisibleButton = CalendarVisibleButton()
     
+    let calendarView = CalendarView()
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -61,6 +63,7 @@ extension DemoHomeViewController {
         hStackView.addArrangedSubview(todayAgendaButton)
         hStackView.addArrangedSubview(growUpButton)
         contentView.addSubview(calendarVisibleButton)
+        contentView.addSubview(calendarView)
     }
     
     func setLayout() {
@@ -100,6 +103,12 @@ extension DemoHomeViewController {
             $0.height.equalTo(40)
         }
         
+        calendarView.snp.makeConstraints {
+            $0.top.equalTo(calendarVisibleButton.snp.bottom)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(0)
+        }
+        
     }
 }
 
@@ -124,6 +133,14 @@ extension DemoHomeViewController: View {
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
                 owner.calendarVisibleButton.toggleCalendarVisible()
+                
+                UIView.animate(withDuration: 0.3) {
+                    let newHeight = owner.calendarVisibleButton.isVisibleCalendar ? 200 : 0
+                    owner.calendarView.snp.updateConstraints {
+                        $0.height.equalTo(newHeight)
+                    }
+                    owner.view.layoutIfNeeded()
+                }
                 print("calendarVisibleButton -", owner.calendarVisibleButton.isVisibleCalendar)
             }).disposed(by: disposeBag)
         

@@ -82,7 +82,12 @@ public final class CalendarVisibleButton: UIView {
     
     func toggleCalendarVisible() {
         isVisibleCalendar.toggle()
-        let image = isVisibleCalendar ? DesignSystemAsset.Home.arrowUp.image : DesignSystemAsset.Home.arrowDown.image
-        arrowImageView.image = image
+        
+        UIView.animate(withDuration: 0.3) {
+            let angle: CGFloat = self.isVisibleCalendar ? .pi : 0
+            self.arrowImageView.transform = CGAffineTransform(rotationAngle: angle)
+            
+            self.layoutIfNeeded()
+        }
     }
 }
