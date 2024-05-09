@@ -36,6 +36,45 @@ public class DemoHomeViewController: BaseViewController {
     
     let calendarView = CalendarView()
     
+    let todayAgendaTitleBar = UIStackView().then {
+        $0.axis = .horizontal
+        $0.distribution = .equalSpacing
+    }
+    
+    let todayAgendaCount = UILabel().then {
+        $0.numberOfLines = 0
+        $0.textColor = .black
+        $0.text = "오늘의 아젠다 (?)"
+        $0.font = DesignSystemFontFamily.Pretendard.bold.font(size: 15)
+        $0.textColor = UIColor(hex: "4E4C4C")
+    }
+    
+    let trashButton = UIButton().then {
+        $0.setImage(DesignSystemAsset.Home.trash.image, for: .normal)
+    }
+    
+    let todayAgendaBackgroundView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.borderColor = UIColor(hex: "EBEBEB").cgColor
+        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 8
+    }
+    
+    let completedAgendaCount = UILabel().then {
+        $0.numberOfLines = 0
+        $0.textColor = .black
+        $0.text = "완료된 아젠다 (?)"
+        $0.font = DesignSystemFontFamily.Pretendard.bold.font(size: 15)
+        $0.textColor = UIColor(hex: "4E4C4C")
+    }
+    
+    let completedAgendaBackgroundView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.borderColor = UIColor(hex: "EBEBEB").cgColor
+        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 8
+    }
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -64,6 +103,12 @@ extension DemoHomeViewController {
         hStackView.addArrangedSubview(growUpButton)
         contentView.addSubview(calendarVisibleButton)
         contentView.addSubview(calendarView)
+        contentView.addSubview(todayAgendaTitleBar)
+        todayAgendaTitleBar.addArrangedSubview(todayAgendaCount)
+        todayAgendaTitleBar.addArrangedSubview(trashButton)
+        contentView.addSubview(todayAgendaBackgroundView)
+        contentView.addSubview(completedAgendaCount)
+        contentView.addSubview(completedAgendaBackgroundView)
     }
     
     func setLayout() {
@@ -107,6 +152,32 @@ extension DemoHomeViewController {
             $0.top.equalTo(calendarVisibleButton.snp.bottom)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(0)
+        }
+        
+        todayAgendaTitleBar.snp.makeConstraints {
+            $0.top.equalTo(calendarView.snp.bottom).offset(30)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        trashButton.snp.makeConstraints {
+            $0.width.height.equalTo(34)
+        }
+        
+        todayAgendaBackgroundView.snp.makeConstraints {
+            $0.top.equalTo(todayAgendaTitleBar.snp.bottom).offset(6)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(220)
+        }
+        
+        completedAgendaCount.snp.makeConstraints {
+            $0.top.equalTo(todayAgendaBackgroundView.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        completedAgendaBackgroundView.snp.makeConstraints {
+            $0.top.equalTo(completedAgendaCount.snp.bottom).offset(14)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.height.equalTo(220)
         }
         
     }
