@@ -23,7 +23,14 @@ let project = Project.module(
                 .Project.Domain.UserDomain
               ],
               settings: nil
-             )
+             ),
+        .unitTests(baseModule: .feature(.HomeFeature), dependencies: [
+            .Project.Features.HomeFeature
+        ]),
+        
+        .demo(baseModule: .feature(.HomeFeature), dependencies: [
+            .Project.Features.HomeFeature
+        ])
     ]
 )
 

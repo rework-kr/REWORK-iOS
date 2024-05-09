@@ -16,7 +16,7 @@ public class DemoSignInViewController: BaseViewController {
     let contentView = UIView()
     
     let logoImageView = UIImageView().then {
-        $0.image = DesignSystemAsset.rework.image
+        $0.image = DesignSystemAsset.SignIn.rework.image
     }
     
     let stackView = UIStackView().then {

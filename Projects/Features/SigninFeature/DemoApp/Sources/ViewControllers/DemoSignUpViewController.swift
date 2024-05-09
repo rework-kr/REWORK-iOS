@@ -21,12 +21,12 @@ public class DemoSignUpViewController: BaseViewController, UINavigationControlle
     }
     
     let backButton = UIButton().then {
-        $0.setImage(DesignSystemAsset.arrowBack.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        $0.setImage(DesignSystemAsset.SignIn.arrowBack.image.withRenderingMode(.alwaysTemplate), for: .normal)
         $0.tintColor = UIColor(hex: "222222")
     }
     
     let logoImageView = UIImageView().then {
-        $0.image = DesignSystemAsset.rework.image
+        $0.image = DesignSystemAsset.SignIn.rework.image
     }
     
     let titleLabel = UILabel().then {
