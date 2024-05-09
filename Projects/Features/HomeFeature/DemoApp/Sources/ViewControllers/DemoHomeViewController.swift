@@ -49,8 +49,10 @@ public class DemoHomeViewController: BaseViewController {
         $0.textColor = UIColor(hex: "4E4C4C")
     }
     
-    let trashButton = UIButton().then {
-        $0.setImage(DesignSystemAsset.Home.trash.image, for: .normal)
+    let addButton = UIButton().then {
+        $0.setImage(DesignSystemAsset.Home.plusCircle.image, for: .normal)
+        $0.layer.shadowOffset = .zero
+        $0.layer.shadowOpacity = 0.25
     }
     
     let todayAgendaBackgroundView = UIView().then {
@@ -59,6 +61,10 @@ public class DemoHomeViewController: BaseViewController {
         $0.layer.borderWidth = 1
         $0.layer.cornerRadius = 8
     }
+    
+    var dataSource: UITableViewDiffableDataSource<String, UUID>!
+    
+    let todayAgendaTableView = UITableView()
     
     let completedAgendaCount = UILabel().then {
         $0.numberOfLines = 0
@@ -105,7 +111,7 @@ extension DemoHomeViewController {
         contentView.addSubview(calendarView)
         contentView.addSubview(todayAgendaTitleBar)
         todayAgendaTitleBar.addArrangedSubview(todayAgendaCount)
-        todayAgendaTitleBar.addArrangedSubview(trashButton)
+        todayAgendaTitleBar.addArrangedSubview(addButton)
         contentView.addSubview(todayAgendaBackgroundView)
         contentView.addSubview(completedAgendaCount)
         contentView.addSubview(completedAgendaBackgroundView)
@@ -159,7 +165,7 @@ extension DemoHomeViewController {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        trashButton.snp.makeConstraints {
+        addButton.snp.makeConstraints {
             $0.width.height.equalTo(34)
         }
         
