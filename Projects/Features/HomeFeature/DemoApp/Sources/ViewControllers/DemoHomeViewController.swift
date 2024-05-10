@@ -103,6 +103,8 @@ public class DemoHomeViewController: BaseViewController {
         return cell
     }
     
+    private let calendarViewHeight: CGFloat = 200
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -255,30 +257,78 @@ extension DemoHomeViewController: View {
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
                 owner.calendarVisibleButton.toggleCalendarVisible()
-                
-                UIView.animate(withDuration: 0.3) {
-                    let newHeight = owner.calendarVisibleButton.isVisibleCalendar ? 200 : 0
-                    owner.calendarView.snp.updateConstraints {
-                        $0.height.equalTo(newHeight)
-                    }
-                    owner.view.layoutIfNeeded()
-                }
+                let isVisible = owner.calendarVisibleButton.isVisibleCalendar
+                owner.updateCalendarVisibility(isVisible)
                 print("calendarVisibleButton -", owner.calendarVisibleButton.isVisibleCalendar)
             }).disposed(by: disposeBag)
         
     }
     
     private func bindAction(reactor: DemoHomeReactor) {
+        let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
+            .compactMap { notification in
+                notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+            }
+            .map { Reactor.Action.keyboardWillShow($0.height) }
+
+        let keyboardWillHide = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
+            .map { _ in Reactor.Action.keyboardWillHide }
         
+        Observable.merge(keyboardWillShow, keyboardWillHide)
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: DemoHomeReactor) {
-        
+        reactor.state.map(\.keyboardState)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { owner, state in
+                owner.updateViewInsetForKeyboardState(state.isShow, state.height)
+            }).disposed(by: disposeBag)
     }
     
 }
 
 private extension DemoHomeViewController {
+    func updateViewInsetForKeyboardState(_ isShowKeyboard: Bool, _ keyboardHeight: CGFloat) {
+        print("updateViewInsetForKeyboardHeight")
+        let isVisibleCalendar = self.calendarVisibleButton.isVisibleCalendar
+        var newInset = UIEdgeInsets()
+        
+        if isVisibleCalendar {
+            // 캘린더가 보여지고 있을 때, 키보드가 나타나면 (캘린더 높이 + 키보드 높이) 키보드가 사라지면 (캘린더 높이)
+            let newBottomInset = isShowKeyboard ? calendarViewHeight + keyboardHeight : calendarViewHeight
+            newInset = UIEdgeInsets(top: 0, left: 0, bottom: CGFloat(newBottomInset), right: 0)
+        } else {
+            newInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        }
+
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self else { return }
+            self.scrollView.contentInset = newInset
+            self.scrollView.scrollIndicatorInsets = newInset
+        }
+    }
+    
+    func updateCalendarVisibility(_ isVisible: Bool) {
+        print("updateCalendarVisibility")
+        let newCalendarHeight: CGFloat = isVisible ? self.calendarViewHeight : 0
+        let newContentInset: UIEdgeInsets = isVisible ? UIEdgeInsets(top: 0, left: 0, bottom: calendarViewHeight, right: 0) : .zero
+        
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self else { return }
+            self.calendarView.snp.updateConstraints {
+                $0.height.equalTo(newCalendarHeight)
+            }
+            
+            self.scrollView.contentInset = newContentInset
+            self.scrollView.scrollIndicatorInsets = newContentInset
+            
+            self.view.layoutIfNeeded()
+        }
+    }
+    
     func updateMossiggang() {
       
     }

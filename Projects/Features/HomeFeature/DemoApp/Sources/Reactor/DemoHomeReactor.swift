@@ -2,6 +2,11 @@ import UIKit
 import ReactorKit
 import RxSwift
 
+public struct KeyboardState: Equatable {
+    let isShow: Bool
+    let height: CGFloat
+}
+
 public final class DemoHomeReactor: Reactor {
     public var initialState: State
     
@@ -13,17 +18,17 @@ public final class DemoHomeReactor: Reactor {
     
     public enum Mutation {
         case viewDidLoaded
-        case setKeyboardHeight(CGFloat)
+        case setKeyboardState(KeyboardState)
     }
     
     public struct State {
-        var keyboardHeight: CGFloat
+        var keyboardState: KeyboardState
         var viewDidLoaded: Bool
     }
     
     public init() {
         self.initialState = .init(
-            keyboardHeight: 0,
+            keyboardState: KeyboardState(isShow: false, height: 0),
             viewDidLoaded: false
         )
     }
@@ -34,10 +39,10 @@ public final class DemoHomeReactor: Reactor {
             return .just(.viewDidLoaded)
             
         case .keyboardWillShow(let height):
-            return .just(.setKeyboardHeight(height))
+            return .just(.setKeyboardState(KeyboardState(isShow: true, height: height)))
             
         case .keyboardWillHide:
-            return .just(.setKeyboardHeight(0))
+            return .just(.setKeyboardState(KeyboardState(isShow: false, height: 0)))
         }
     }
     
@@ -47,8 +52,8 @@ public final class DemoHomeReactor: Reactor {
         case .viewDidLoaded:
             newState.viewDidLoaded = true
             
-        case .setKeyboardHeight(let height):
-            newState.keyboardHeight = height
+        case .setKeyboardState(let keyboardState):
+            newState.keyboardState = keyboardState
         }
         return newState
     }
