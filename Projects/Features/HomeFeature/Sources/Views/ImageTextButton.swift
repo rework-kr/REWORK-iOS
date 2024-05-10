@@ -5,7 +5,7 @@ import SnapKit
 import Then
 
 public final class ImageTextButton: UIView {
-    var button = UIButton()
+    public var button = UIButton()
     
     let hStackView = UIStackView().then {
         $0.axis = .horizontal
@@ -72,15 +72,15 @@ public final class ImageTextButton: UIView {
         
     }
     
-    func setImage(_ image: UIImage) {
+    public func setImage(_ image: UIImage) {
         imageView.image = image
     }
     
-    func setTitle(_ title: String) {
+    public func setTitle(_ title: String) {
         titleLabel.text = title
     }
     
-    func setSubTitle(_ subTitle: String) {
+    public func setSubTitle(_ subTitle: String) {
         subTitleLabel.text = subTitle
     }
 }

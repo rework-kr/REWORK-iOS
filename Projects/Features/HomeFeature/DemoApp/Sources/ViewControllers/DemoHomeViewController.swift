@@ -10,6 +10,8 @@ import RxCocoa
 import ReactorKit
 import RxKeyboard
 
+let testTodayAgendaList = ["주간회의 업무 보고", "컨퍼런스 미팅", "컨퍼런스 연사 준비", "외부 밋업 초청 컨택", "기술 블로그 작성하기", "세미나 개최하기"]
+
 public class DemoHomeViewController: BaseViewController {
     public var disposeBag = DisposeBag()
     
@@ -55,16 +57,24 @@ public class DemoHomeViewController: BaseViewController {
         $0.layer.shadowOpacity = 0.25
     }
     
-    let todayAgendaBackgroundView = UIView().then {
-        $0.backgroundColor = .white
+    let todayAgendaTableView = UITableView().then {
+        $0.register(AgendaCell.self, forCellReuseIdentifier: AgendaCell.reuseIdentifier)
         $0.layer.borderColor = UIColor(hex: "EBEBEB").cgColor
         $0.layer.borderWidth = 1
         $0.layer.cornerRadius = 8
+        $0.separatorInset = .init(top: 0, left: 25, bottom: 0, right: 25)
+        //$0.separatorStyle = .none
     }
     
-    var dataSource: UITableViewDiffableDataSource<String, UUID>!
-    
-    let todayAgendaTableView = UITableView()
+    lazy var todayAgendaTableViewDiffableDataSource = UITableViewDiffableDataSource<Int, AgendaSectionItem>(
+        tableView: todayAgendaTableView
+    ) { tableView, indexPath, itemIdentifier in
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
+        else { return UITableViewCell() }
+        cell.configure(title: itemIdentifier.title)
+        cell.selectionStyle = .none
+        return cell
+    }
     
     let completedAgendaCount = UILabel().then {
         $0.numberOfLines = 0
@@ -74,11 +84,23 @@ public class DemoHomeViewController: BaseViewController {
         $0.textColor = UIColor(hex: "4E4C4C")
     }
     
-    let completedAgendaBackgroundView = UIView().then {
-        $0.backgroundColor = .white
+    let completedAgendaTableView = UITableView().then {
+        $0.register(AgendaCell.self, forCellReuseIdentifier: AgendaCell.reuseIdentifier)
         $0.layer.borderColor = UIColor(hex: "EBEBEB").cgColor
         $0.layer.borderWidth = 1
         $0.layer.cornerRadius = 8
+        $0.separatorInset = .init(top: 0, left: 25, bottom: 0, right: 25)
+        //$0.separatorStyle = .none
+    }
+    
+    lazy var completedAgendaTableViewDiffableDataSource = UITableViewDiffableDataSource<Int, AgendaSectionItem>(
+        tableView: completedAgendaTableView
+    ) { tableView, indexPath, itemIdentifier in
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
+        else { return UITableViewCell() }
+        cell.configure(title: itemIdentifier.title)
+        cell.selectionStyle = .none
+        return cell
     }
     
     init() {
@@ -94,9 +116,32 @@ public class DemoHomeViewController: BaseViewController {
         print("ViewDidLoad")
         addSubViews()
         setLayout()
+        self.reactor = DemoHomeReactor()
+        
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
-        self.reactor = DemoHomeReactor()
+        
+        todayAgendaTableView.delegate = self
+        setTodayAgendaTableView()
+        setCompletedAgendaTableView()
+    }
+    
+    func setTodayAgendaTableView() {
+        let todayAgendaList = testTodayAgendaList
+            .enumerated()
+            .map { AgendaSectionItem(index: $0.offset, title: $0.element) }
+        var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
+        snapshot.appendSections([0])
+        snapshot.appendItems(todayAgendaList, toSection: 0)
+        
+        todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func setCompletedAgendaTableView() {
+        var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
+        snapshot.appendSections([0])
+        
+        completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
@@ -112,9 +157,9 @@ extension DemoHomeViewController {
         contentView.addSubview(todayAgendaTitleBar)
         todayAgendaTitleBar.addArrangedSubview(todayAgendaCount)
         todayAgendaTitleBar.addArrangedSubview(addButton)
-        contentView.addSubview(todayAgendaBackgroundView)
+        contentView.addSubview(todayAgendaTableView)
         contentView.addSubview(completedAgendaCount)
-        contentView.addSubview(completedAgendaBackgroundView)
+        contentView.addSubview(completedAgendaTableView)
     }
     
     func setLayout() {
@@ -169,18 +214,18 @@ extension DemoHomeViewController {
             $0.width.height.equalTo(34)
         }
         
-        todayAgendaBackgroundView.snp.makeConstraints {
+        todayAgendaTableView.snp.makeConstraints {
             $0.top.equalTo(todayAgendaTitleBar.snp.bottom).offset(6)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(220)
         }
         
         completedAgendaCount.snp.makeConstraints {
-            $0.top.equalTo(todayAgendaBackgroundView.snp.bottom).offset(20)
+            $0.top.equalTo(todayAgendaTableView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        completedAgendaBackgroundView.snp.makeConstraints {
+        completedAgendaTableView.snp.makeConstraints {
             $0.top.equalTo(completedAgendaCount.snp.bottom).offset(14)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(220)
@@ -238,4 +283,10 @@ private extension DemoHomeViewController {
       
     }
     
+}
+
+extension DemoHomeViewController: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 40
+    }
 }

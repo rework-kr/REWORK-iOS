@@ -6,7 +6,7 @@ import Then
 
 public final class CalendarVisibleButton: UIView {
     
-    var button = UIButton()
+    public var button = UIButton()
     
     let calendarImageView = UIImageView().then {
         $0.image = DesignSystemAsset.Home.calendar.image
@@ -31,7 +31,7 @@ public final class CalendarVisibleButton: UIView {
         
     }
     
-    private(set) var isVisibleCalendar: Bool = false
+    public private(set) var isVisibleCalendar: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -80,7 +80,7 @@ public final class CalendarVisibleButton: UIView {
         
     }
     
-    func toggleCalendarVisible() {
+    public func toggleCalendarVisible() {
         isVisibleCalendar.toggle()
         
         UIView.animate(withDuration: 0.3) {
