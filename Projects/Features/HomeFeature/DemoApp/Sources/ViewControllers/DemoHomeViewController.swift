@@ -124,14 +124,14 @@ public class DemoHomeViewController: BaseViewController {
         navigationController?.isNavigationBarHidden = true
         
         todayAgendaTableView.delegate = self
-        setTodayAgendaTableView()
-        setCompletedAgendaTableView()
+        configureTodayAgendaTableView()
+        configureCompletedAgendaTableView()
     }
     
-    func setTodayAgendaTableView() {
+    func configureTodayAgendaTableView() {
         let todayAgendaList = testTodayAgendaList
             .enumerated()
-            .map { AgendaSectionItem(index: $0.offset, title: $0.element) }
+            .map { AgendaSectionItem(title: $0.element) }
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         snapshot.appendSections([0])
         snapshot.appendItems(todayAgendaList, toSection: 0)
@@ -139,7 +139,7 @@ public class DemoHomeViewController: BaseViewController {
         todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    func setCompletedAgendaTableView() {
+    func configureCompletedAgendaTableView() {
         var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
         snapshot.appendSections([0])
         
@@ -261,6 +261,22 @@ extension DemoHomeViewController: View {
                 owner.updateCalendarVisibility(isVisible)
                 print("calendarVisibleButton -", owner.calendarVisibleButton.isVisibleCalendar)
             }).disposed(by: disposeBag)
+        
+        addButton.rx.tap
+            .withUnretained(self)
+            .bind { owner, _ in
+                var snapshot = owner.todayAgendaTableViewDiffableDataSource.snapshot()
+                
+                if let first = snapshot.itemIdentifiers.first {
+                    snapshot.insertItems([AgendaSectionItem(title: "")], beforeItem: first)
+                } else {
+                    snapshot.appendItems([AgendaSectionItem(title: "")])
+                }
+                
+                owner.todayAgendaTableViewDiffableDataSource.apply(snapshot)
+                owner.todayAgendaTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+                
+            }.disposed(by: disposeBag)
         
     }
     
