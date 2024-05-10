@@ -18,6 +18,13 @@ public final class AgendaCell: UITableViewCell {
         $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 12)
         $0.textColor = UIColor(hex: "746A6A")
         //$0.numberOfLines = 0
+        $0.attributedPlaceholder = NSAttributedString(
+            string: "아젠다 추가하기",
+            attributes: [
+                .font: DesignSystemFontFamily.Pretendard.medium.font(size: 12),
+                .foregroundColor: UIColor.lightGray
+            ]
+        )
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
