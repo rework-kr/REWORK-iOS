@@ -26,6 +26,7 @@ public enum DesignSystemAsset {
     public static let bookRoundedRectangle = DesignSystemImages(name: "book_rounded_rectangle")
     public static let calendar = DesignSystemImages(name: "calendar")
     public static let checkFill = DesignSystemImages(name: "check_fill")
+    public static let dragIndicator = DesignSystemImages(name: "drag_indicator")
     public static let plusCircle = DesignSystemImages(name: "plus_circle")
     public static let sparkRoundedRectangle = DesignSystemImages(name: "spark_rounded_rectangle")
     public static let trash = DesignSystemImages(name: "trash")
