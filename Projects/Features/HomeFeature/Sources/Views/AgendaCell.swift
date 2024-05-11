@@ -5,7 +5,7 @@ import Then
 
 public final class AgendaCell: UITableViewCell {
     public static let reuseIdentifier = String(describing: AgendaCell.self)
-
+    
     let completeButton = UIButton().then {
         $0.layer.cornerRadius = 9 // 원의 반지름을 버튼의 높이의 절반으로 설정
         $0.backgroundColor = .white
@@ -14,7 +14,7 @@ public final class AgendaCell: UITableViewCell {
         $0.clipsToBounds = true
     }
     
-    let agendaTitleLabel = UITextField().then {
+    let agendaTitleTextField = UITextField().then {
         $0.font = DesignSystemFontFamily.Pretendard.medium.font(size: 12)
         $0.textColor = UIColor(hex: "746A6A")
         //$0.numberOfLines = 0
@@ -26,7 +26,7 @@ public final class AgendaCell: UITableViewCell {
             ]
         )
     }
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubViews()
@@ -38,14 +38,16 @@ public final class AgendaCell: UITableViewCell {
     }
 
     public func configure(title: String) {
-        agendaTitleLabel.text = title
+        agendaTitleTextField.text = title
     }
+    
+    
 }
 
 private extension AgendaCell {
     func addSubViews() {
         contentView.addSubview(completeButton)
-        contentView.addSubview(agendaTitleLabel)
+        contentView.addSubview(agendaTitleTextField)
     }
 
     func setLayout() {
@@ -54,7 +56,7 @@ private extension AgendaCell {
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
         }
-        agendaTitleLabel.snp.makeConstraints {
+        agendaTitleTextField.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.top)
             $0.left.equalTo(completeButton.snp.right).offset(10)
             $0.right.equalToSuperview().inset(40)
