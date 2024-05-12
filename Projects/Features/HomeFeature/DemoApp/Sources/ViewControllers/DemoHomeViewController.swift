@@ -381,7 +381,7 @@ extension DemoHomeViewController: UITableViewDelegate {
 
 extension DemoHomeViewController: AgendaCellDelegate {
     public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
-        guard let text = text, text.isEmpty else {
+        guard let text = text, !text.isEmpty else {
             deleteCell(cell)
             return
         }
