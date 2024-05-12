@@ -5,6 +5,7 @@ import Then
 
 public protocol AgendaCellDelegate: AnyObject {
     func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?)
+    func completeButtonDidTap(_ cell: AgendaCell)
 }
 
 public final class AgendaCell: UITableViewCell {
@@ -35,6 +36,7 @@ public final class AgendaCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         agendaTitleTextField.delegate = self
+        completeButton.addTarget(self, action: #selector(didTapCompleteButton(_:)), for: .touchUpInside)
         addSubViews()
         setLayout()
     }
@@ -78,4 +80,10 @@ extension AgendaCell: UITextFieldDelegate {
     public func textFieldDidEndEditing(_ textField: UITextField) {
         delegate?.textFieldEditingDidEnd(self, textField.text)
     }
+}
+
+extension AgendaCell {
+    @objc func didTapCompleteButton(_ sender: UIButton) {
+        delegate?.completeButtonDidTap(self)
+      }
 }

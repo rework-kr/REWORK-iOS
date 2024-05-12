@@ -380,6 +380,11 @@ extension DemoHomeViewController: UITableViewDelegate {
 
 
 extension DemoHomeViewController: AgendaCellDelegate {
+    public func completeButtonDidTap(_ cell: AgendaCell) {
+        #warning("완료된 아젠다로 이동 시키기")
+        
+    }
+    
     public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
         guard let text = text, !text.isEmpty else {
             deleteCell(cell)
