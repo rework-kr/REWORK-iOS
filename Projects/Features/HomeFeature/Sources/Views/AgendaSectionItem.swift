@@ -4,10 +4,14 @@ import SnapKit
 import Then
 
 public struct AgendaSectionItem: Hashable, Equatable {
-    public let title: String
+    public private(set) var title: String
     public let identifier = UUID()
 
     public init(title: String) {
+        self.title = title
+    }
+    
+    public mutating func setTitle(_ title: String) {
         self.title = title
     }
 }

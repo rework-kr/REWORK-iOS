@@ -68,10 +68,12 @@ public class DemoHomeViewController: BaseViewController {
     
     lazy var todayAgendaTableViewDiffableDataSource = UITableViewDiffableDataSource<Int, AgendaSectionItem>(
         tableView: todayAgendaTableView
-    ) { tableView, indexPath, itemIdentifier in
+    ) { [weak self] tableView, indexPath, itemIdentifier in
+        guard let self else { return UITableViewCell() }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
         else { return UITableViewCell() }
         cell.configure(title: itemIdentifier.title)
+        cell.delegate = self
         cell.selectionStyle = .none
         return cell
     }
@@ -374,6 +376,51 @@ extension DemoHomeViewController: UITableViewDelegate {
     }
     
 }
+
+
+
+extension DemoHomeViewController: AgendaCellDelegate {
+    public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
+        guard let text = text, text.isEmpty else {
+            deleteCell(cell)
+            return
+        }
+        updateCell(cell, text)
+    }
+    
+    private func deleteCell(_ cell: AgendaCell) {
+        print("🚀 deleteCell")
+        var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
+        
+        guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
+        guard let item = snapshot.itemIdentifiers[safe: row] else { return }
+        
+        snapshot.deleteItems([item])
+        todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func updateCell(_ cell: AgendaCell, _ text: String) {
+        print("🚀 updateCell")
+        var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
+        
+        guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
+        guard let item = snapshot.itemIdentifiers[safe: row] else { return }
+        let newItem = AgendaSectionItem(title: text)
+        
+        if snapshot.numberOfItems <= 1 {
+            snapshot.deleteItems([item])
+            snapshot.appendItems([newItem])
+        } else {
+            guard let afterItem = snapshot.itemIdentifiers[safe: row + 1] else { return }
+            snapshot.deleteItems([item])
+            snapshot.insertItems([newItem], beforeItem: afterItem)
+        }
+        // TODO: iOS 15+ 부터 아래 API로 업데이트 가능, 근데 스냅샷에 반영이 안되는중..
+        //snapshot.reconfigureItems([item])
+        todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
+
 
 class AgendaDataSource: UITableViewDiffableDataSource<Int, AgendaSectionItem> {
     public override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {

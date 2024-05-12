@@ -3,6 +3,10 @@ import DesignSystem
 import SnapKit
 import Then
 
+public protocol AgendaCellDelegate: AnyObject {
+    func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?)
+}
+
 public final class AgendaCell: UITableViewCell {
     public static let reuseIdentifier = String(describing: AgendaCell.self)
     
@@ -26,9 +30,11 @@ public final class AgendaCell: UITableViewCell {
             ]
         )
     }
+    public weak var delegate: AgendaCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        agendaTitleTextField.delegate = self
         addSubViews()
         setLayout()
     }
@@ -65,5 +71,11 @@ private extension AgendaCell {
             
             
         }
+    }
+}
+
+extension AgendaCell: UITextFieldDelegate {
+    public func textFieldDidEndEditing(_ textField: UITextField) {
+        delegate?.textFieldEditingDidEnd(self, textField.text)
     }
 }
