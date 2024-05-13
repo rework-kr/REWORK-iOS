@@ -61,6 +61,9 @@ public final class AgendaCell: UITableViewCell {
         updateButtonHidden(type)
     }
     
+    public func becomeFirstResponderToTextField() {
+        agendaTitleTextField.becomeFirstResponder()
+    }
     
 }
 

@@ -282,6 +282,10 @@ extension DemoHomeViewController: View {
                 owner.todayAgendaTableViewDiffableDataSource.apply(snapshot)
                 owner.todayAgendaTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
                 
+                if let cell = owner.todayAgendaTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AgendaCell {
+                    cell.becomeFirstResponderToTextField()
+                }
+                
             }.disposed(by: disposeBag)
         
     }
@@ -417,7 +421,8 @@ extension DemoHomeViewController: AgendaCellDelegate {
     private func deleteCellInTodayAgenda(_ cell: AgendaCell) {
         print("🚀 deleteCellInTodayAgenda")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
-        
+                
+        // TODO: 스크롤 되어 셀이 안보이면 못찾음
         guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
         guard let item = snapshot.itemIdentifiers[safe: row] else { return }
         
