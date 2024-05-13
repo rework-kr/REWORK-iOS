@@ -131,6 +131,7 @@ public class DemoHomeViewController: BaseViewController {
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
         
+        calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
         todayAgendaTableView.isEditing = true
         todayAgendaTableView.delegate = self
         completedAgendaTableView.delegate = self
@@ -392,8 +393,6 @@ extension DemoHomeViewController: UITableViewDelegate {
     
 }
 
-
-
 extension DemoHomeViewController: AgendaCellDelegate {
     public func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?) {
         deleteCellInTodayAgenda(cell)
@@ -506,4 +505,12 @@ class AgendaDataSource: UITableViewDiffableDataSource<Int, AgendaSectionItem> {
         
         apply(snapshot, animatingDifferences: false)
     }
+}
+
+extension DemoHomeViewController: UICalendarSelectionSingleDateDelegate {
+    public func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        print("🚀", selection.description, dateComponents?.month, dateComponents?.day)
+    }
+    
+    
 }
