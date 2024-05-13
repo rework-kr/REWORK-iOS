@@ -395,11 +395,13 @@ extension DemoHomeViewController: UITableViewDelegate {
 
 extension DemoHomeViewController: AgendaCellDelegate {
     public func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?) {
+        HapticManager.shared.impact(style: .medium)
         deleteCellInTodayAgenda(cell)
         appendCellInCompleteAgenda(text ?? "")
     }
     
     public func checkButtonDidTap(_ cell: AgendaCell, _ text: String?) {
+        HapticManager.shared.impact(style: .medium)
         deleteCellInCompletedAgenda(cell)
         appendCellInTodayAgenda(text ?? "")
     }
