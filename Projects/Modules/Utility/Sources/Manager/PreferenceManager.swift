@@ -16,7 +16,7 @@ public final class PreferenceManager {
     public static var calendarIsOpen: Bool?
 
     @UserDefaultWrapper(key: Constants.agendaList.rawValue, defaultValue: nil)
-    public static var agendaList: [Date:Int]?
+    public static var agendaList: [AgendaDate : AgendaInfo]?
 }
 
 @propertyWrapper
