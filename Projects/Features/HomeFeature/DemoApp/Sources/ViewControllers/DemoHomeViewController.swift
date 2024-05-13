@@ -72,7 +72,7 @@ public class DemoHomeViewController: BaseViewController {
         guard let self else { return UITableViewCell() }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
         else { return UITableViewCell() }
-        cell.configure(title: itemIdentifier.title)
+        cell.configure(title: itemIdentifier.title, type: .uncompleted)
         cell.delegate = self
         cell.selectionStyle = .none
         return cell
@@ -100,7 +100,7 @@ public class DemoHomeViewController: BaseViewController {
     ) { tableView, indexPath, itemIdentifier in
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
         else { return UITableViewCell() }
-        cell.configure(title: itemIdentifier.title)
+        cell.configure(title: itemIdentifier.title, type: .completed)
         cell.selectionStyle = .none
         return cell
     }
@@ -126,6 +126,7 @@ public class DemoHomeViewController: BaseViewController {
         navigationController?.isNavigationBarHidden = true
         
         todayAgendaTableView.delegate = self
+        completedAgendaTableView.delegate = self
         configureTodayAgendaTableView()
         configureCompletedAgendaTableView()
         todayAgendaTableView.setEditing(true, animated: true)
@@ -380,20 +381,21 @@ extension DemoHomeViewController: UITableViewDelegate {
 
 
 extension DemoHomeViewController: AgendaCellDelegate {
-    public func completeButtonDidTap(_ cell: AgendaCell) {
+    public func completeButtonDidTap(_ cell: AgendaCell, _ text: String?) {
         #warning("완료된 아젠다로 이동 시키기")
-        
+        deleteCellInTodayAgenda(cell)
+        appendCellInCompleteAgenda(text ?? "")
     }
     
     public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
         guard let text = text, !text.isEmpty else {
-            deleteCell(cell)
+            deleteCellInTodayAgenda(cell)
             return
         }
-        updateCell(cell, text)
+        updateCellInTodayAgenda(cell, text)
     }
     
-    private func deleteCell(_ cell: AgendaCell) {
+    private func deleteCellInTodayAgenda(_ cell: AgendaCell) {
         print("🚀 deleteCell")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         
@@ -404,7 +406,7 @@ extension DemoHomeViewController: AgendaCellDelegate {
         todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private func updateCell(_ cell: AgendaCell, _ text: String) {
+    private func updateCellInTodayAgenda(_ cell: AgendaCell, _ text: String) {
         print("🚀 updateCell")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         
@@ -423,6 +425,23 @@ extension DemoHomeViewController: AgendaCellDelegate {
         // TODO: iOS 15+ 부터 아래 API로 업데이트 가능, 근데 스냅샷에 반영이 안되는중..
         //snapshot.reconfigureItems([item])
         todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    private func deleteCellInCompletedAgenda(_ cell: AgendaCell) {
+        
+    }
+    
+    private func appendCellInCompleteAgenda(_ text: String) {
+        print("🚀 appendCellInCompleteAgenda")
+        var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
+        
+        if let first = snapshot.itemIdentifiers.first {
+            snapshot.insertItems([AgendaSectionItem(title: text)], beforeItem: first)
+        } else {
+            snapshot.appendItems([AgendaSectionItem(title: text)])
+        }
+        
+        completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 

@@ -3,9 +3,13 @@ import DesignSystem
 import SnapKit
 import Then
 
+public enum AgendaCellType {
+    case uncompleted, completed
+}
+
 public protocol AgendaCellDelegate: AnyObject {
     func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?)
-    func completeButtonDidTap(_ cell: AgendaCell)
+    func completeButtonDidTap(_ cell: AgendaCell, _ text: String?)
 }
 
 public final class AgendaCell: UITableViewCell {
@@ -17,6 +21,10 @@ public final class AgendaCell: UITableViewCell {
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor.lightGray.cgColor
         $0.clipsToBounds = true
+    }
+    
+    let doneImageView = UIImageView().then {
+        $0.image = DesignSystemAsset.Home.checkFill.image
     }
     
     let agendaTitleTextField = UITextField().then {
@@ -32,6 +40,7 @@ public final class AgendaCell: UITableViewCell {
         )
     }
     public weak var delegate: AgendaCellDelegate?
+    public private(set) var type: AgendaCellType = .uncompleted
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,8 +54,9 @@ public final class AgendaCell: UITableViewCell {
         super.init(coder: coder)
     }
 
-    public func configure(title: String) {
+    public func configure(title: String, type: AgendaCellType) {
         agendaTitleTextField.text = title
+        updateButtonHidden(type)
     }
     
     
@@ -55,11 +65,17 @@ public final class AgendaCell: UITableViewCell {
 private extension AgendaCell {
     func addSubViews() {
         contentView.addSubview(completeButton)
+        contentView.addSubview(doneImageView)
         contentView.addSubview(agendaTitleTextField)
     }
 
     func setLayout() {
         completeButton.snp.makeConstraints {
+            $0.left.equalToSuperview().offset(25)
+            $0.width.height.equalTo(18)
+            $0.centerY.equalToSuperview()
+        }
+        doneImageView.snp.makeConstraints {
             $0.left.equalToSuperview().offset(25)
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
@@ -70,9 +86,24 @@ private extension AgendaCell {
             $0.right.equalToSuperview().inset(40)
             $0.bottom.equalTo(contentView.snp.bottom)
             $0.centerY.equalToSuperview()
-            
-            
         }
+        
+    }
+}
+
+private extension AgendaCell {
+    func updateButtonHidden(_ type: AgendaCellType) {
+        self.type = type
+        let currentType = self.type
+        switch currentType {
+        case .uncompleted:
+            doneImageView.isHidden = true
+            completeButton.isHidden = false
+        case .completed:
+            doneImageView.isHidden = false
+            completeButton.isHidden = true
+        }
+        
     }
 }
 
@@ -84,6 +115,6 @@ extension AgendaCell: UITextFieldDelegate {
 
 extension AgendaCell {
     @objc func didTapCompleteButton(_ sender: UIButton) {
-        delegate?.completeButtonDidTap(self)
+        delegate?.completeButtonDidTap(self, agendaTitleTextField.text)
       }
 }
