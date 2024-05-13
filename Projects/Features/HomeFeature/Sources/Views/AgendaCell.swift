@@ -9,13 +9,13 @@ public enum AgendaCellType {
 
 public protocol AgendaCellDelegate: AnyObject {
     func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?)
-    func completeButtonDidTap(_ cell: AgendaCell, _ text: String?)
+    func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?)
 }
 
 public final class AgendaCell: UITableViewCell {
     public static let reuseIdentifier = String(describing: AgendaCell.self)
     
-    let completeButton = UIButton().then {
+    let uncheckButton = UIButton().then {
         $0.layer.cornerRadius = 9 // 원의 반지름을 버튼의 높이의 절반으로 설정
         $0.backgroundColor = .white
         $0.layer.borderWidth = 1
@@ -23,8 +23,8 @@ public final class AgendaCell: UITableViewCell {
         $0.clipsToBounds = true
     }
     
-    let completedImageView = UIImageView().then {
-        $0.image = DesignSystemAsset.Home.checkFill.image
+    let checkButton = UIButton().then {
+        $0.setImage(DesignSystemAsset.Home.checkFill.image, for: .normal)
     }
     
     let agendaTitleTextField = UITextField().then {
@@ -45,7 +45,7 @@ public final class AgendaCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         agendaTitleTextField.delegate = self
-        completeButton.addTarget(self, action: #selector(didTapCompleteButton(_:)), for: .touchUpInside)
+        uncheckButton.addTarget(self, action: #selector(didTapCompleteButton(_:)), for: .touchUpInside)
         addSubViews()
         setLayout()
     }
@@ -64,25 +64,25 @@ public final class AgendaCell: UITableViewCell {
 
 private extension AgendaCell {
     func addSubViews() {
-        contentView.addSubview(completeButton)
-        contentView.addSubview(completedImageView)
+        contentView.addSubview(uncheckButton)
+        contentView.addSubview(checkButton)
         contentView.addSubview(agendaTitleTextField)
     }
 
     func setLayout() {
-        completeButton.snp.makeConstraints {
+        uncheckButton.snp.makeConstraints {
             $0.left.equalToSuperview().offset(25)
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
         }
-        completedImageView.snp.makeConstraints {
+        checkButton.snp.makeConstraints {
             $0.left.equalToSuperview().offset(25)
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
         }
         agendaTitleTextField.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.top)
-            $0.left.equalTo(completeButton.snp.right).offset(10)
+            $0.left.equalTo(uncheckButton.snp.right).offset(10)
             $0.right.equalToSuperview().inset(40)
             $0.bottom.equalTo(contentView.snp.bottom)
             $0.centerY.equalToSuperview()
@@ -97,11 +97,11 @@ private extension AgendaCell {
         let currentType = self.type
         switch currentType {
         case .uncompleted:
-            completedImageView.isHidden = true
-            completeButton.isHidden = false
+            checkButton.isHidden = true
+            uncheckButton.isHidden = false
         case .completed:
-            completedImageView.isHidden = false
-            completeButton.isHidden = true
+            checkButton.isHidden = false
+            uncheckButton.isHidden = true
         }
         
     }
@@ -115,6 +115,6 @@ extension AgendaCell: UITextFieldDelegate {
 
 extension AgendaCell {
     @objc func didTapCompleteButton(_ sender: UIButton) {
-        delegate?.completeButtonDidTap(self, agendaTitleTextField.text)
+        delegate?.uncheckButtonDidTap(self, agendaTitleTextField.text)
       }
 }
