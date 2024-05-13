@@ -414,7 +414,7 @@ extension DemoHomeViewController: AgendaCellDelegate {
         guard let item = snapshot.itemIdentifiers[safe: row] else { return }
         let newItem = AgendaSectionItem(title: text)
         
-        if snapshot.numberOfItems <= 1 {
+        if snapshot.numberOfItems == 1 {
             snapshot.deleteItems([item])
             snapshot.appendItems([newItem])
         } else {
