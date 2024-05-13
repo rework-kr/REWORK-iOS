@@ -66,7 +66,7 @@ public class DemoHomeViewController: BaseViewController {
         //$0.separatorStyle = .none
     }
     
-    lazy var todayAgendaTableViewDiffableDataSource = UITableViewDiffableDataSource<Int, AgendaSectionItem>(
+    lazy var todayAgendaTableViewDiffableDataSource = AgendaDataSource(
         tableView: todayAgendaTableView
     ) { [weak self] tableView, indexPath, itemIdentifier in
         guard let self else { return UITableViewCell() }
@@ -127,11 +127,11 @@ public class DemoHomeViewController: BaseViewController {
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
         
+        todayAgendaTableView.isEditing = true
         todayAgendaTableView.delegate = self
         completedAgendaTableView.delegate = self
         configureTodayAgendaTableView()
         configureCompletedAgendaTableView()
-        todayAgendaTableView.setEditing(true, animated: true)
     }
     
     func configureTodayAgendaTableView() {
@@ -310,7 +310,9 @@ extension DemoHomeViewController: View {
             .distinctUntilChanged()
             .withUnretained(self)
             .subscribe(onNext: { owner, state in
+                print("🚀 keyboard", state.isShow)
                 owner.updateViewInsetForKeyboardState(state.isShow, state.height)
+                owner.todayAgendaTableView.setEditing(!state.isShow, animated: false)
             }).disposed(by: disposeBag)
     }
     
@@ -478,7 +480,7 @@ extension DemoHomeViewController: AgendaCellDelegate {
 
 
 class AgendaDataSource: UITableViewDiffableDataSource<Int, AgendaSectionItem> {
-    public override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true // 모든 Cell 을 이동 가능하게 설정합니다.
     }
     
