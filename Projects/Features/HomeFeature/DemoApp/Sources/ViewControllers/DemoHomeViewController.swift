@@ -97,10 +97,12 @@ public class DemoHomeViewController: BaseViewController {
     
     lazy var completedAgendaTableViewDiffableDataSource = AgendaDataSource(
         tableView: completedAgendaTableView
-    ) { tableView, indexPath, itemIdentifier in
+    ) { [weak self] tableView, indexPath, itemIdentifier in
+        guard let self else { return UITableViewCell() }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
         else { return UITableViewCell() }
         cell.configure(title: itemIdentifier.title, type: .completed)
+        cell.delegate = self
         cell.selectionStyle = .none
         return cell
     }
@@ -381,10 +383,14 @@ extension DemoHomeViewController: UITableViewDelegate {
 
 
 extension DemoHomeViewController: AgendaCellDelegate {
-    public func completeButtonDidTap(_ cell: AgendaCell, _ text: String?) {
-        #warning("완료된 아젠다로 이동 시키기")
+    public func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?) {
         deleteCellInTodayAgenda(cell)
         appendCellInCompleteAgenda(text ?? "")
+    }
+    
+    public func checkButtonDidTap(_ cell: AgendaCell, _ text: String?) {
+        deleteCellInCompletedAgenda(cell)
+        appendCellInTodayAgenda(text ?? "")
     }
     
     public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
@@ -395,8 +401,21 @@ extension DemoHomeViewController: AgendaCellDelegate {
         updateCellInTodayAgenda(cell, text)
     }
     
+    private func appendCellInTodayAgenda(_ text: String) {
+        print("🚀 appendCellInTodayAgenda")
+        var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
+        
+        if let first = snapshot.itemIdentifiers.first {
+            snapshot.insertItems([AgendaSectionItem(title: text)], beforeItem: first)
+        } else {
+            snapshot.appendItems([AgendaSectionItem(title: text)])
+        }
+        
+        todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
     private func deleteCellInTodayAgenda(_ cell: AgendaCell) {
-        print("🚀 deleteCell")
+        print("🚀 deleteCellInTodayAgenda")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         
         guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
@@ -407,7 +426,7 @@ extension DemoHomeViewController: AgendaCellDelegate {
     }
     
     private func updateCellInTodayAgenda(_ cell: AgendaCell, _ text: String) {
-        print("🚀 updateCell")
+        print("🚀 updateCellInTodayAgenda")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         
         guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
@@ -427,10 +446,6 @@ extension DemoHomeViewController: AgendaCellDelegate {
         todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: false)
     }
     
-    private func deleteCellInCompletedAgenda(_ cell: AgendaCell) {
-        
-    }
-    
     private func appendCellInCompleteAgenda(_ text: String) {
         print("🚀 appendCellInCompleteAgenda")
         var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
@@ -441,6 +456,17 @@ extension DemoHomeViewController: AgendaCellDelegate {
             snapshot.appendItems([AgendaSectionItem(title: text)])
         }
         
+        completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func deleteCellInCompletedAgenda(_ cell: AgendaCell) {
+        print("🚀 deleteCellInCompletedAgenda")
+        var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
+        
+        guard let row = completedAgendaTableView.indexPath(for: cell)?.row else { return }
+        guard let item = snapshot.itemIdentifiers[safe: row] else { return }
+        
+        snapshot.deleteItems([item])
         completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
 }

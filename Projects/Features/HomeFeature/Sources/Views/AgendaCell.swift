@@ -10,6 +10,7 @@ public enum AgendaCellType {
 public protocol AgendaCellDelegate: AnyObject {
     func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?)
     func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?)
+    func checkButtonDidTap(_ cell: AgendaCell, _ text: String?)
 }
 
 public final class AgendaCell: UITableViewCell {
@@ -45,7 +46,8 @@ public final class AgendaCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         agendaTitleTextField.delegate = self
-        uncheckButton.addTarget(self, action: #selector(didTapCompleteButton(_:)), for: .touchUpInside)
+        uncheckButton.addTarget(self, action: #selector(didTapUnCheckButton(_:)), for: .touchUpInside)
+        checkButton.addTarget(self, action: #selector(didTapCheckButton(_:)), for: .touchUpInside)
         addSubViews()
         setLayout()
     }
@@ -114,7 +116,10 @@ extension AgendaCell: UITextFieldDelegate {
 }
 
 extension AgendaCell {
-    @objc func didTapCompleteButton(_ sender: UIButton) {
+    @objc func didTapUnCheckButton(_ sender: UIButton) {
         delegate?.uncheckButtonDidTap(self, agendaTitleTextField.text)
-      }
+    }
+    @objc func didTapCheckButton(_ sender: UIButton) {
+        delegate?.checkButtonDidTap(self, agendaTitleTextField.text)
+    }
 }
