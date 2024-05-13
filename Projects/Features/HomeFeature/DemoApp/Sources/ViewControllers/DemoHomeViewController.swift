@@ -36,7 +36,11 @@ public class DemoHomeViewController: BaseViewController {
     
     let calendarVisibleButton = CalendarVisibleButton()
     
-    let calendarView = CalendarView()
+    let calendarView = UICalendarView().then {
+        $0.wantsDateDecorations = true
+        $0.locale = Locale(identifier: "ko_KR")
+        $0.fontDesign = .rounded
+    }
     
     let todayAgendaTitleBar = UIStackView().then {
         $0.axis = .horizontal
@@ -107,7 +111,7 @@ public class DemoHomeViewController: BaseViewController {
         return cell
     }
     
-    private let calendarViewHeight: CGFloat = 200
+    private let calendarViewHeight: CGFloat = 260
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -209,12 +213,14 @@ extension DemoHomeViewController {
         
         calendarView.snp.makeConstraints {
             $0.top.equalTo(calendarVisibleButton.snp.bottom)
-            $0.horizontalEdges.equalToSuperview().inset(20)
+            //$0.horizontalEdges.equalToSuperview().inset(20)
+            $0.width.equalTo(280)
             $0.height.equalTo(0)
+            $0.centerX.equalToSuperview()
         }
         
         todayAgendaTitleBar.snp.makeConstraints {
-            $0.top.equalTo(calendarView.snp.bottom).offset(30)
+            $0.top.equalTo(calendarView.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -223,7 +229,7 @@ extension DemoHomeViewController {
         }
         
         todayAgendaTableView.snp.makeConstraints {
-            $0.top.equalTo(todayAgendaTitleBar.snp.bottom).offset(6)
+            $0.top.equalTo(todayAgendaTitleBar.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(220)
         }
@@ -234,7 +240,7 @@ extension DemoHomeViewController {
         }
         
         completedAgendaTableView.snp.makeConstraints {
-            $0.top.equalTo(completedAgendaCount.snp.bottom).offset(14)
+            $0.top.equalTo(completedAgendaCount.snp.bottom).offset(15)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(220)
         }
