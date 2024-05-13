@@ -23,7 +23,7 @@ public final class AgendaCell: UITableViewCell {
         $0.clipsToBounds = true
     }
     
-    let doneImageView = UIImageView().then {
+    let completedImageView = UIImageView().then {
         $0.image = DesignSystemAsset.Home.checkFill.image
     }
     
@@ -65,7 +65,7 @@ public final class AgendaCell: UITableViewCell {
 private extension AgendaCell {
     func addSubViews() {
         contentView.addSubview(completeButton)
-        contentView.addSubview(doneImageView)
+        contentView.addSubview(completedImageView)
         contentView.addSubview(agendaTitleTextField)
     }
 
@@ -75,7 +75,7 @@ private extension AgendaCell {
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
         }
-        doneImageView.snp.makeConstraints {
+        completedImageView.snp.makeConstraints {
             $0.left.equalToSuperview().offset(25)
             $0.width.height.equalTo(18)
             $0.centerY.equalToSuperview()
@@ -97,10 +97,10 @@ private extension AgendaCell {
         let currentType = self.type
         switch currentType {
         case .uncompleted:
-            doneImageView.isHidden = true
+            completedImageView.isHidden = true
             completeButton.isHidden = false
         case .completed:
-            doneImageView.isHidden = false
+            completedImageView.isHidden = false
             completeButton.isHidden = true
         }
         
