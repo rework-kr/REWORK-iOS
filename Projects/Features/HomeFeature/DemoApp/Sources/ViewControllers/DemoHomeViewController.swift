@@ -127,34 +127,9 @@ public class DemoHomeViewController: BaseViewController {
         addSubViews()
         setLayout()
         self.reactor = DemoHomeReactor()
-        
+        reactor?.action.onNext(.viewDidLoad)
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
-        
-        calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
-        todayAgendaTableView.isEditing = true
-        todayAgendaTableView.delegate = self
-        completedAgendaTableView.delegate = self
-        configureTodayAgendaTableView()
-        configureCompletedAgendaTableView()
-    }
-    
-    func configureTodayAgendaTableView() {
-        let todayAgendaList = testTodayAgendaList
-            .enumerated()
-            .map { AgendaSectionItem(title: $0.element) }
-        var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
-        snapshot.appendSections([0])
-        snapshot.appendItems(todayAgendaList, toSection: 0)
-        
-        todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    func configureCompletedAgendaTableView() {
-        var snapshot = completedAgendaTableViewDiffableDataSource.snapshot()
-        snapshot.appendSections([0])
-        
-        completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
@@ -251,8 +226,36 @@ extension DemoHomeViewController {
 
 extension DemoHomeViewController: View {
     public func bind(reactor: DemoHomeReactor) {
+        print("✅ bind!")
+        calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
+        todayAgendaTableView.isEditing = true
+        todayAgendaTableView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        completedAgendaTableView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
+    }
+    
+    private func bindAction(reactor: DemoHomeReactor) {
+        self.rx.methodInvoked(#selector(viewDidLoad))
+            .map { _ in Reactor.Action.viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
+            .compactMap { notification in
+                notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+            }
+            .map { Reactor.Action.keyboardWillShow($0.height) }
+
+        let keyboardWillHide = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
+            .map { _ in Reactor.Action.keyboardWillHide }
+        
+        Observable.merge(keyboardWillShow, keyboardWillHide)
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         todayAgendaButton.button.rx.tap
             .withUnretained(self)
@@ -267,13 +270,9 @@ extension DemoHomeViewController: View {
             }.disposed(by: disposeBag)
         
         calendarVisibleButton.button.rx.tap
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                owner.calendarVisibleButton.toggleCalendarVisible()
-                let isVisible = owner.calendarVisibleButton.isVisibleCalendar
-                owner.updateCalendarVisibility(isVisible)
-                print("calendarVisibleButton -", owner.calendarVisibleButton.isVisibleCalendar)
-            }).disposed(by: disposeBag)
+            .map { _ in Reactor.Action.calendarVisibleButtonDidTap }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         addButton.rx.tap
             .withUnretained(self)
@@ -294,30 +293,52 @@ extension DemoHomeViewController: View {
                 }
                 
             }.disposed(by: disposeBag)
-        
-    }
-    
-    private func bindAction(reactor: DemoHomeReactor) {
-        let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-            .compactMap { notification in
-                notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-            }
-            .map { Reactor.Action.keyboardWillShow($0.height) }
-
-        let keyboardWillHide = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
-            .map { _ in Reactor.Action.keyboardWillHide }
-        
-        Observable.merge(keyboardWillShow, keyboardWillHide)
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: DemoHomeReactor) {
+        
+        reactor.state.map(\.isVisibleCalendar)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { owner, isVisibleCalendar in
+                owner.calendarVisibleButton.toggleCalendarVisible()
+                owner.updateCalendarVisibility(isVisibleCalendar)
+            }).disposed(by: disposeBag)
+        
+        reactor.state.map(\.uncompletedAgendaDataSource)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { owner, dataSource in
+                var snapshot = owner.todayAgendaTableViewDiffableDataSource.snapshot()
+
+                let sectionIdentifier = 0
+                if !snapshot.sectionIdentifiers.contains(sectionIdentifier) {
+                    snapshot.appendSections([sectionIdentifier])
+                }
+                snapshot.appendItems(dataSource, toSection: 0)
+                
+                owner.todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+            }).disposed(by: disposeBag)
+        
+        reactor.state.map(\.completedAgendaDataSource)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { owner, dataSource in
+                var snapshot = owner.completedAgendaTableViewDiffableDataSource.snapshot()
+                
+                let sectionIdentifier = 0
+                if !snapshot.sectionIdentifiers.contains(sectionIdentifier) {
+                    snapshot.appendSections([sectionIdentifier])
+                }
+                snapshot.appendItems(dataSource, toSection: 0)
+                
+                owner.completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
+            }).disposed(by: disposeBag)
+        
         reactor.state.map(\.keyboardState)
             .distinctUntilChanged()
             .withUnretained(self)
             .subscribe(onNext: { owner, state in
-                print("🚀 keyboard", state.isShow)
                 owner.updateViewInsetForKeyboardState(state.isShow, state.height)
                 owner.todayAgendaTableView.setEditing(!state.isShow, animated: false)
             }).disposed(by: disposeBag)
@@ -347,7 +368,6 @@ private extension DemoHomeViewController {
     }
     
     func updateCalendarVisibility(_ isVisible: Bool) {
-        print("updateCalendarVisibility")
         let newCalendarHeight: CGFloat = isVisible ? self.calendarViewHeight : 0
         let newContentInset: UIEdgeInsets = isVisible ? UIEdgeInsets(top: 0, left: 0, bottom: calendarViewHeight, right: 0) : .zero
         
@@ -362,10 +382,6 @@ private extension DemoHomeViewController {
             
             self.view.layoutIfNeeded()
         }
-    }
-    
-    func updateMossiggang() {
-      
     }
     
 }
@@ -398,20 +414,33 @@ extension DemoHomeViewController: AgendaCellDelegate {
         HapticManager.shared.impact(style: .medium)
         deleteCellInTodayAgenda(cell)
         appendCellInCompleteAgenda(text ?? "")
+        let unCompletedAgendaDataSource = todayAgendaTableViewDiffableDataSource.snapshot().itemIdentifiers
+        let completedAgendaDataSource = completedAgendaTableViewDiffableDataSource.snapshot().itemIdentifiers
+        reactor?.action.onNext(.unCheckButtonDidTap(
+            unCompletedAgendaDataSource: unCompletedAgendaDataSource,
+            completedAgendaDataSource: completedAgendaDataSource))
     }
     
     public func checkButtonDidTap(_ cell: AgendaCell, _ text: String?) {
         HapticManager.shared.impact(style: .medium)
         deleteCellInCompletedAgenda(cell)
         appendCellInTodayAgenda(text ?? "")
+        let unCompletedAgendaDataSource = todayAgendaTableViewDiffableDataSource.snapshot().itemIdentifiers
+        let completedAgendaDataSource = completedAgendaTableViewDiffableDataSource.snapshot().itemIdentifiers
+        reactor?.action.onNext(.checkButtonDidTap(
+            unCompletedAgendaDataSource: unCompletedAgendaDataSource,
+            completedAgendaDataSource: completedAgendaDataSource))
     }
     
     public func textFieldEditingDidEnd(_ cell: AgendaCell, _ text: String?) {
-        guard let text = text, !text.isEmpty else {
+        guard let text = text else { return }
+        if text.isEmpty {
             deleteCellInTodayAgenda(cell)
-            return
+        } else {
+            updateCellInTodayAgenda(cell, text)
         }
-        updateCellInTodayAgenda(cell, text)
+        let dataSource = todayAgendaTableViewDiffableDataSource.snapshot().itemIdentifiers
+        reactor?.action.onNext(.textFieldEditingDidEnd(dataSource))
     }
     
     private func appendCellInTodayAgenda(_ text: String) {
@@ -443,22 +472,16 @@ extension DemoHomeViewController: AgendaCellDelegate {
         print("🚀 updateCellInTodayAgenda")
         var snapshot = todayAgendaTableViewDiffableDataSource.snapshot()
         
-        guard let row = todayAgendaTableView.indexPath(for: cell)?.row else { return }
-        guard let item = snapshot.itemIdentifiers[safe: row] else { return }
-        let newItem = AgendaSectionItem(title: text)
+        guard let indexPath = todayAgendaTableView.indexPath(for: cell) else { return }
+        guard let oldItem = todayAgendaTableViewDiffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-        if snapshot.numberOfItems == 1 {
-            snapshot.deleteItems([item])
-            snapshot.appendItems([newItem])
-        } else {
-            guard let afterItem = snapshot.itemIdentifiers[safe: row + 1] else { return }
-            snapshot.deleteItems([item])
-            snapshot.insertItems([newItem], beforeItem: afterItem)
-        }
-        // TODO: iOS 15+ 부터 아래 API로 업데이트 가능, 근데 스냅샷에 반영이 안되는중..
-        //snapshot.reconfigureItems([item])
+        let newItem = AgendaSectionItem(title: text)
+        snapshot.insertItems([newItem], beforeItem: oldItem)
+        snapshot.deleteItems([oldItem])
+        
         todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: false)
     }
+    
     
     private func appendCellInCompleteAgenda(_ text: String) {
         print("🚀 appendCellInCompleteAgenda")
@@ -511,7 +534,8 @@ class AgendaDataSource: UITableViewDiffableDataSource<Int, AgendaSectionItem> {
 
 extension DemoHomeViewController: UICalendarSelectionSingleDateDelegate {
     public func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-        print("🚀", selection.description, dateComponents?.month, dateComponents?.day)
+        guard let date = dateComponents?.date else { return }
+        reactor?.action.onNext(.dateDidSelect(date))
     }
     
     

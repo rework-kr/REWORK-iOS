@@ -3,7 +3,7 @@ import DesignSystem
 import SnapKit
 import Then
 
-public enum AgendaCellType {
+public enum AgendaType {
     case uncompleted, completed
 }
 
@@ -41,7 +41,7 @@ public final class AgendaCell: UITableViewCell {
         )
     }
     public weak var delegate: AgendaCellDelegate?
-    public private(set) var type: AgendaCellType = .uncompleted
+    public private(set) var type: AgendaType = .uncompleted
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -56,7 +56,7 @@ public final class AgendaCell: UITableViewCell {
         super.init(coder: coder)
     }
 
-    public func configure(title: String, type: AgendaCellType) {
+    public func configure(title: String, type: AgendaType) {
         agendaTitleTextField.text = title
         updateButtonHidden(type)
     }
@@ -97,7 +97,7 @@ private extension AgendaCell {
 }
 
 private extension AgendaCell {
-    func updateButtonHidden(_ type: AgendaCellType) {
+    func updateButtonHidden(_ type: AgendaType) {
         self.type = type
         let currentType = self.type
         switch currentType {

@@ -31,8 +31,9 @@ public final class CalendarVisibleButton: UIView {
         
     }
     
-    public private(set) var isVisibleCalendar: Bool = false
-    
+    //public private(set) var isVisibleCalendar: Bool = false
+    public var isVisibleCalendar: Bool = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubViews()

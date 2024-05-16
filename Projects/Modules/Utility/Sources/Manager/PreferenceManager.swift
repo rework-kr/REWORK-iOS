@@ -9,14 +9,18 @@ public final class PreferenceManager {
     enum Constants: String {
         case user
         case calendarIsOpen // HomeView 캘린더 오픈 여부
-        case agendaList // 아젠다 딕셔너리
+        case uncompletedAgendaList // 아젠다 딕셔너리
+        case completedAgendaList
     }
 
     @UserDefaultWrapper(key: Constants.calendarIsOpen.rawValue, defaultValue: nil)
     public static var calendarIsOpen: Bool?
 
-    @UserDefaultWrapper(key: Constants.agendaList.rawValue, defaultValue: nil)
-    public static var agendaList: [AgendaDate : AgendaInfo]?
+    @UserDefaultWrapper(key: Constants.uncompletedAgendaList.rawValue, defaultValue: nil)
+    public static var uncompletedAgendaList: [AgendaDate : [AgendaInfo]]?
+    
+    @UserDefaultWrapper(key: Constants.completedAgendaList.rawValue, defaultValue: nil)
+    public static var completedAgendaList: [AgendaDate : [AgendaInfo]]?
 }
 
 @propertyWrapper
