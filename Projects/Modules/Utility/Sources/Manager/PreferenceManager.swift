@@ -1,5 +1,4 @@
 import Foundation
-import RxSwift
 
 /// UserDefaults에 편리하게 접근하기 위한 클래스 정의
 public final class PreferenceManager {
@@ -50,12 +49,6 @@ public final class UserDefaultWrapper<T: Codable> {
             if let encoded = try? encoder.encode(newValue) {
                 UserDefaults.standard.setValue(encoded, forKey: key)
             }
-            subject.onNext(newValue)
         }
-    }
-
-    private lazy var subject = BehaviorSubject<T?>(value: wrappedValue)
-    public var projectedValue: Observable<T?> {
-        return subject.asObservable()
     }
 }
