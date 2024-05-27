@@ -123,6 +123,7 @@ extension AgendaCell {
         delegate?.uncheckButtonDidTap(self, agendaTitleTextField.text)
     }
     @objc func didTapCheckButton(_ sender: UIButton) {
+        print("⭐️1. didTapCheckButton-", agendaTitleTextField.text ?? "nil")
         delegate?.checkButtonDidTap(self, agendaTitleTextField.text)
     }
 }

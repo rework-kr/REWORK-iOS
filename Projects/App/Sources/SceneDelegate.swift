@@ -8,6 +8,7 @@
 
 import UIKit
 import SignInFeature
+import HomeFeature
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -18,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: scene)
-        let vc = UINavigationController(rootViewController: SignInViewController())
+        let vc = UINavigationController(rootViewController: HomeViewController())
         self.window?.rootViewController = vc
         self.window?.makeKeyAndVisible()
     }

@@ -1,7 +1,6 @@
 import UIKit
 import DesignSystem
 import BaseFeature
-import HomeFeature
 import SnapKit
 import Then
 import Utility
@@ -12,7 +11,7 @@ import RxKeyboard
 
 let testTodayAgendaList = ["주간회의 업무 보고", "컨퍼런스 미팅", "컨퍼런스 연사 준비", "외부 밋업 초청 컨택", "기술 블로그 작성하기", "세미나 개최하기"]
 
-public class DemoHomeViewController: BaseViewController {
+public class HomeViewController: BaseViewController {
     public var disposeBag = DisposeBag()
     
     let scrollView = UIScrollView()
@@ -113,7 +112,7 @@ public class DemoHomeViewController: BaseViewController {
     
     private let calendarViewHeight: CGFloat = 260
     
-    init() {
+    public init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -126,14 +125,14 @@ public class DemoHomeViewController: BaseViewController {
         print("ViewDidLoad")
         addSubViews()
         setLayout()
-        self.reactor = DemoHomeReactor()
+        self.reactor = HomeReactor()
         reactor?.action.onNext(.viewDidLoad)
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
     }
 }
 
-extension DemoHomeViewController {
+extension HomeViewController {
     func addSubViews() {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -224,8 +223,8 @@ extension DemoHomeViewController {
     }
 }
 
-extension DemoHomeViewController: View {
-    public func bind(reactor: DemoHomeReactor) {
+extension HomeViewController: View {
+    public func bind(reactor: HomeReactor) {
         print("✅ bind!")
         calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
         todayAgendaTableView.isEditing = true
@@ -238,7 +237,7 @@ extension DemoHomeViewController: View {
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: DemoHomeReactor) {
+    private func bindAction(reactor: HomeReactor) {
         self.rx.methodInvoked(#selector(viewDidLoad))
             .map { _ in Reactor.Action.viewDidLoad }
             .bind(to: reactor.action)
@@ -295,7 +294,7 @@ extension DemoHomeViewController: View {
             }.disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: DemoHomeReactor) {
+    private func bindState(reactor: HomeReactor) {
         
         reactor.state.map(\.isVisibleCalendar)
             .distinctUntilChanged()
@@ -346,7 +345,7 @@ extension DemoHomeViewController: View {
     
 }
 
-private extension DemoHomeViewController {
+private extension HomeViewController {
     func updateViewInsetForKeyboardState(_ isShowKeyboard: Bool, _ keyboardHeight: CGFloat) {
         print("updateViewInsetForKeyboardHeight")
         let isVisibleCalendar = self.calendarVisibleButton.isVisibleCalendar
@@ -386,7 +385,7 @@ private extension DemoHomeViewController {
     
 }
 
-extension DemoHomeViewController: UITableViewDelegate {
+extension HomeViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 40
     }
@@ -409,7 +408,7 @@ extension DemoHomeViewController: UITableViewDelegate {
     
 }
 
-extension DemoHomeViewController: AgendaCellDelegate {
+extension HomeViewController: AgendaCellDelegate {
     public func uncheckButtonDidTap(_ cell: AgendaCell, _ text: String?) {
         HapticManager.shared.impact(style: .medium)
         deleteCellInTodayAgenda(cell)
@@ -534,7 +533,7 @@ class AgendaDataSource: UITableViewDiffableDataSource<Int, AgendaSectionItem> {
     }
 }
 
-extension DemoHomeViewController: UICalendarSelectionSingleDateDelegate {
+extension HomeViewController: UICalendarSelectionSingleDateDelegate {
     public func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         guard let date = dateComponents?.date else { return }
         reactor?.action.onNext(.dateDidSelect(date))
