@@ -15,7 +15,7 @@ import Utility
 
 public final class SignInView: BaseView {
     lazy var logoImageView = UIImageView().then {
-        $0.image = DesignSystemAsset.rework.image
+        $0.image = DesignSystemAsset.SignIn.rework.image
     }
     
     lazy var descriptionView = DescriptionView().then {

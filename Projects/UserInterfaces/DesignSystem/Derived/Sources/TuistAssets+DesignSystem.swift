@@ -20,8 +20,22 @@
 
 // swiftlint:disable identifier_name line_length nesting type_body_length type_name
 public enum DesignSystemAsset {
+  public enum Home {
+  public static let arrowDown = DesignSystemImages(name: "arrow_down")
+    public static let arrowUp = DesignSystemImages(name: "arrow_up")
+    public static let bookRoundedRectangle = DesignSystemImages(name: "book_rounded_rectangle")
+    public static let calendar = DesignSystemImages(name: "calendar")
+    public static let checkFill = DesignSystemImages(name: "check_fill")
+    public static let dragIndicator = DesignSystemImages(name: "drag_indicator")
+    public static let plusCircle = DesignSystemImages(name: "plus_circle")
+    public static let sparkRoundedRectangle = DesignSystemImages(name: "spark_rounded_rectangle")
+    public static let trash = DesignSystemImages(name: "trash")
+  }
+  public enum SignIn {
   public static let arrowBack = DesignSystemImages(name: "arrow_back")
-  public static let rework = DesignSystemImages(name: "rework")
+    public static let rework = DesignSystemImages(name: "rework")
+    public static let rocket = DesignSystemImages(name: "rocket")
+  }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
 

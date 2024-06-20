@@ -13,7 +13,7 @@ public class DemoSignUpAfterViewController: BaseViewController, UINavigationCont
     public var disposeBag = DisposeBag()
     
     let rocketImageView = UIImageView().then {
-        $0.image = DesignSystemAsset.rework.image
+        $0.image = DesignSystemAsset.SignIn.rocket.image
     }
     
     let stackView = UIStackView().then {
