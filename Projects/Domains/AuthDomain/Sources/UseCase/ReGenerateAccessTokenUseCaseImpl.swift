@@ -1,9 +1,18 @@
-//
-//  ReGenerateAccessTokenUseCaseImpl.swift
-//  AuthDomain
-//
-//  Created by YoungK on 6/20/24.
-//  Copyright © 2024 youngkyu.song. All rights reserved.
-//
-
 import Foundation
+import RxSwift
+
+public protocol ReGenerateAccessTokenUseCase {
+    func execute() -> Single<TokenEntity>
+}
+
+public struct ReGenerateAccessTokenUseCaseImpl: ReGenerateAccessTokenUseCase {
+    private let authRepository: any AuthRepository
+
+    public init(authRepository: any AuthRepository) {
+        self.authRepository = authRepository
+    }
+
+    public func execute() -> Single<TokenEntity> {
+        authRepository.reGenerateAccessToken()
+    }
+}
