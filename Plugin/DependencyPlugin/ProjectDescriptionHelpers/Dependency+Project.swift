@@ -20,6 +20,7 @@ public extension TargetDependency.Project.Features {
 public extension TargetDependency.Project.Module {
     static let testableThirdPartyLib = TargetDependency.module(target: .testableThirdPartyLib)
     static let FeatureThirdPartyLib = TargetDependency.module(target: .featureThirdPartyLib)
+    static let domainThirdPartyLib = TargetDependency.module(target: .domainThirdPartyLib)
     static let ErrorModule = TargetDependency.module(target: .ErrorModule)
     static let KeychainModule = TargetDependency.module(target: .KeychainModule)
     static let Utility = TargetDependency.module(target: .Utility)

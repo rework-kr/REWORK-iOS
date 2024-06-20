@@ -7,7 +7,7 @@ import Utility
 public protocol RWAPI: TargetType {
     var domain: RWDomain { get }
     var urlPath: String { get }
-    var errorMap: [Int: Error] { get }
+    var errorMap: [Int: RWError] { get }
 }
 
 public extension RWAPI {

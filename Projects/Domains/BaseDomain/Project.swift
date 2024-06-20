@@ -8,7 +8,8 @@ let project = Project.module(
     dependencies: [
         .Project.Module.ErrorModule,
         .Project.Module.KeychainModule,
-        .Project.Module.Utility
+        .Project.Module.Utility,
+        .Project.Module.domainThirdPartyLib
     ]
 )
 
