@@ -28,7 +28,7 @@ public extension TargetDependency.Project.Module {
 public extension TargetDependency.Project.Domain {
     static let BaseDomain = TargetDependency.domain(target: .BaseDomain)
     static let AuthDomain = TargetDependency.domain(target: .AuthDomain)
-    static let UserDomain = TargetDependency.domain(target: .UserDomain)
+    static let AgendaDomain = TargetDependency.domain(target: .AgendaDomain)
 
 }
 

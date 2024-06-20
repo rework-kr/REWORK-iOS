@@ -21,8 +21,7 @@ let project = Project.module(
               dependencies: [
                 .Project.Features.BaseFeature,
                 .Project.Features.MainTabFeature,
-                .Project.Domain.AuthDomain,
-                .Project.Domain.UserDomain
+                .Project.Domain.AuthDomain
               ],
               settings: nil
              ),

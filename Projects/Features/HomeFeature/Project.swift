@@ -20,7 +20,7 @@ let project = Project.module(
               scripts: [],
               dependencies: [
                 .Project.Features.BaseFeature,
-                .Project.Domain.UserDomain
+                .Project.Domain.AgendaDomain
               ],
               settings: nil
              ),

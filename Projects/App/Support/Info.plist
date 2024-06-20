@@ -58,5 +58,18 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+    <key>Secrets</key>
+    <dict>
+        <key>BASE_DEV_URL</key>
+        <string>$(BASE_DEV_URL)</string>
+        <key>BASE_PROD_URL</key>
+        <string>$(BASE_PROD_URL)</string>
+        <key>RWDOMAIN_AUTH</key>
+        <string>$(RWDOMAIN_AUTH)</string>
+        <key>RWDOMAIN_DAILY_AGENDA</key>
+        <string>$(RWDOMAIN_DAILY_AGENDA)</string>
+        <key>RWDOMAIN_MONTHLY_AGENDA</key>
+        <string>$(RWDOMAIN_MONTHLY_AGENDA)</string>
+    </dict>
 </dict>
 </plist>

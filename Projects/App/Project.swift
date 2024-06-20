@@ -30,8 +30,7 @@ let targets: [Target] = [
           scripts: [],
           dependencies: [
             .Project.Features.SignInFeature,
-            .Project.Domain.AuthDomain,
-            .Project.Domain.UserDomain
+            .Project.Domain.AuthDomain
           ],
           settings: .settings(
             base: env.baseSetting,

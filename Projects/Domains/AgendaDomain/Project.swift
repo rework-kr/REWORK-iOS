@@ -3,9 +3,10 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.module(
-    name: ModulePaths.Domain.UserDomain.rawValue,
+    name: ModulePaths.Domain.AgendaDomain.rawValue,
     product: .staticLibrary,
     dependencies: [
         .Project.Domain.BaseDomain
     ]
 )
+
