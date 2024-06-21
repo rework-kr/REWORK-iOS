@@ -222,6 +222,13 @@ extension SignInViewController: View {
                 owner.updateLoginButtonState(emailIsValid)
                 owner.updatePasswordTextFieldState(emailIsValid)
             }).disposed(by: disposeBag)
+        
+        reactor.pulse(\.$loggedIn)
+            .compactMap { $0 }
+            .bind(with: self) { owner, isLoggedIn in
+                print("로그인 버튼 눌림", isLoggedIn)
+            }
+            .disposed(by: disposeBag)
     }
     
 }

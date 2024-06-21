@@ -9,8 +9,13 @@
 import UIKit
 import SignInFeature
 import HomeFeature
+import MainTabFeature
+import AuthDomain
+import KeychainModule
+import RxSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var disposeBag = DisposeBag()
     var window: UIWindow?
     func scene(
         _ scene: UIScene,
@@ -19,7 +24,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: scene)
-        let vc = UINavigationController(rootViewController: HomeViewController())
+        
+        let keychain = KeychainImpl()
+        let local = LocalAuthDataSourceImpl(keychain: keychain)
+        let remote = RemoteAuthDataSourceImpl(keychain: keychain)
+        let repository = AuthRepositoryImpl(localAuthDataSource: local, remoteAuthDataSource: remote)
+        let checkIsExistAccessTokenUseCase = CheckIsExistAccessTokenUseCaseImpl(authRepository: repository)
+        var entryViewController: UIViewController = SignInViewController()
+        checkIsExistAccessTokenUseCase.execute()
+            .asObservable()
+            .flatMap { isExist in
+                return isExist ? Observable.just(true) : Observable.just(false)
+            }
+            .subscribe { isExist in
+                entryViewController = isExist ? MainTabViewController(reactor: MainTabReactor()) : SignInViewController()
+            }
+            .disposed(by: disposeBag)
+        
+        let vc = UINavigationController(rootViewController: MainTabViewController(reactor: MainTabReactor()))
         self.window?.rootViewController = vc
         self.window?.makeKeyAndVisible()
     }

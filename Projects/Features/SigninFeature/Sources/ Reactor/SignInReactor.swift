@@ -29,7 +29,7 @@ public final class SignInReactor: Reactor {
         var email: String
         var viewDidLoaded: Bool
         var validationResult: ValidationResult?
-        var loggedIn: Bool
+        @Pulse var loggedIn: Bool?
     }
     
     public init() {
