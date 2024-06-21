@@ -10,7 +10,7 @@ import ReactorKit
 import RxKeyboard
 import NVActivityIndicatorView
 
-public class SignUpViewController: BaseViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+public class SignUpViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     public var disposeBag = DisposeBag()
     
     let scrollView = UIScrollView()

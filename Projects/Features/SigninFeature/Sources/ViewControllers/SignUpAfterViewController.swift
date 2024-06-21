@@ -9,7 +9,7 @@ import RxCocoa
 import ReactorKit
 import RxKeyboard
 
-public class SignUpAfterViewController: BaseViewController, UINavigationControllerDelegate {
+public class SignUpAfterViewController: UIViewController, UINavigationControllerDelegate {
     public var disposeBag = DisposeBag()
     
     let rocketImageView = UIImageView().then {
@@ -55,7 +55,6 @@ public class SignUpAfterViewController: BaseViewController, UINavigationControll
     }
     
     public override func viewDidLoad() {
-        super.viewDidLoad()
         addSubViews()
         setLayout()
         navigationController?.isNavigationBarHidden = true

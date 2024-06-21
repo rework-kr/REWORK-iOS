@@ -9,7 +9,7 @@ import RxCocoa
 import ReactorKit
 import RxKeyboard
 
-public class SignInViewController: BaseViewController {
+public class SignInViewController: UIViewController {
     public var disposeBag = DisposeBag()
     
     let scrollView = UIScrollView()

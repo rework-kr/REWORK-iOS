@@ -5,8 +5,8 @@ import RxCocoa
 import Utility
 
 public struct KeyboardState: Equatable {
-    let isShow: Bool
-    let height: CGFloat
+    public let isShow: Bool
+    public let height: CGFloat
 }
 
 public final class HomeReactor: Reactor {

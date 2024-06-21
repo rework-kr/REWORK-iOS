@@ -5,11 +5,8 @@ import RxSwift
 import RxCocoa
 import AuthDomain
 import BaseFeature
-import SignInFeature
 import HomeFeature
 import DesignSystem
-
-
 
 public protocol TabItemDelegate: AnyObject {
     func tabItemDidTap(tabItemType: TabItemType)

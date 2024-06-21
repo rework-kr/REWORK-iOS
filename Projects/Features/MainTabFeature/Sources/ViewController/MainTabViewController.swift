@@ -5,7 +5,6 @@ import RxSwift
 import RxCocoa
 import AuthDomain
 import BaseFeature
-import SignInFeature
 import HomeFeature
 import DesignSystem
 import Utility
@@ -30,9 +29,6 @@ public final class MainTabViewController: BaseReactorViewController<MainTabReact
     let safeAreaBottomView = UIView().then {
         $0.backgroundColor = .black
     }
-    
-    let homeViewController = HomeViewController()
-    let signInViewController = SignInViewController()
     
     var currentViewController: UIViewController?
     
