@@ -87,8 +87,6 @@ public final class CalendarVisibleButton: UIView {
         UIView.animate(withDuration: 0.3) {
             let angle: CGFloat = self.isVisibleCalendar ? .pi : 0
             self.arrowImageView.transform = CGAffineTransform(rotationAngle: angle)
-            
-            self.layoutIfNeeded()
         }
     }
 }

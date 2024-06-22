@@ -4,7 +4,7 @@ import Then
 import DesignSystem
 import Utility
 
-final class HomeView: UIView {
+final class NewHomeView: UIView {
     let scrollView = UIScrollView()
     let contentView = UIView()
     let hStackView = UIStackView().then {
@@ -63,7 +63,11 @@ final class HomeView: UIView {
     
     weak var agendaCellDelegate: AgendaCellDelegate?
     
-    lazy var todayAgendaTableViewDiffableDataSource = AgendaDataSource.create(tableView: todayAgendaTableView, agendaCellDelegate: agendaCellDelegate, agendaType: .uncompleted)
+    lazy var todayAgendaTableViewDiffableDataSource = AgendaDataSource.create(
+        tableView: todayAgendaTableView,
+        agendaCellDelegate: agendaCellDelegate,
+        agendaType: .uncompleted
+    )
     
     let completedAgendaCount = UILabel().then {
         $0.numberOfLines = 0
@@ -82,7 +86,17 @@ final class HomeView: UIView {
         //$0.separatorStyle = .none
     }
     
-    lazy var completedAgendaTableViewDiffableDataSource = AgendaDataSource.create(tableView: completedAgendaTableView, agendaCellDelegate: agendaCellDelegate, agendaType: .completed)
+    lazy var completedAgendaTableViewDiffableDataSource = AgendaDataSource.create(
+        tableView: completedAgendaTableView,
+        agendaCellDelegate: agendaCellDelegate,
+        agendaType: .completed
+    )
+    
+    private let testLabel = UILabel().then {
+        $0.numberOfLines = 0
+        $0.textColor = .black
+        $0.text = "HelloNewHomeView"
+    }
     
     public let calendarViewHeight: CGFloat = 260
     
@@ -90,6 +104,7 @@ final class HomeView: UIView {
         super.init(frame: .zero)
         addViews()
         setLayout()
+        initDiffableDataSource()
     }
     
     required init?(coder: NSCoder) {
@@ -114,24 +129,14 @@ final class HomeView: UIView {
     
     func setLayout() {
         self.backgroundColor = .white
+        //contentView.backgroundColor = .lightGray
         
-        let contentViewHeight: CGFloat = APP_HEIGHT() - STATUS_BAR_HEIGHT()
         scrollView.snp.makeConstraints {
-            $0.edges.equalTo(self.safeAreaLayoutGuide)
-//            $0.height.equalTo(contentViewHeight)
-//
-//            $0.horizontalEdges.equalToSuperview()
-//            $0.top.equalToSuperview().offset(STATUS_BAR_HEIGHT())
-//            $0.height.equalTo(contentViewHeight)
-//            $0.bottom.equalToSuperview()
+            $0.edges.equalTo(safeAreaLayoutGuide)
         }
-        
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.height.equalTo(scrollView.frameLayoutGuide)
-            
-//            $0.width.height.equalToSuperview()
-//            $0.verticalEdges.horizontalEdges.equalToSuperview()
         }
         
         hStackView.snp.makeConstraints {
@@ -168,10 +173,6 @@ final class HomeView: UIView {
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        addButton.snp.makeConstraints {
-            $0.width.height.equalTo(34)
-        }
-        
         todayAgendaTableView.snp.makeConstraints {
             $0.top.equalTo(todayAgendaTitleBar.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -190,5 +191,20 @@ final class HomeView: UIView {
         }
         
     }
+    
 }
 
+extension NewHomeView {
+    func initDiffableDataSource() {
+        var snapshot1 = todayAgendaTableViewDiffableDataSource.snapshot()
+        var snapshot2 = completedAgendaTableViewDiffableDataSource.snapshot()
+        
+        snapshot1.appendSections([0])
+        snapshot2.appendSections([0])
+        snapshot1.appendItems([], toSection: 0)
+        snapshot2.appendItems([], toSection: 0)
+        
+        todayAgendaTableViewDiffableDataSource.apply(snapshot1, animatingDifferences: true)
+        completedAgendaTableViewDiffableDataSource.apply(snapshot2, animatingDifferences: true)
+    }
+}

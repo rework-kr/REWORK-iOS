@@ -36,7 +36,7 @@ public final class HomeReactor: Reactor {
     
     public struct State {
         var keyboardState: KeyboardState
-        var isVisibleCalendar: Bool
+        @Pulse var isVisibleCalendar: Bool?
         var uncompletedAgendaDataSource: [AgendaSectionItem]
         var completedAgendaDataSource: [AgendaSectionItem]
         var selectedDate: Date
@@ -53,7 +53,7 @@ public final class HomeReactor: Reactor {
     }
     
     public func mutate(action: Action) -> Observable<Mutation> {
-        print("🚀 mutate")
+        //print("🚀 mutate")
         switch action {
         case .viewDidLoad:
             return fetchData()
@@ -178,7 +178,7 @@ private extension HomeReactor {
     }
 
     func toggleCalendarVisible() -> Observable<Mutation> {
-        let prev = currentState.isVisibleCalendar
+        guard let prev = currentState.isVisibleCalendar else { return .empty() }
         PreferenceManager.calendarIsOpen = !prev
         return .just(.updateCalendarVisibie(!prev))
     }

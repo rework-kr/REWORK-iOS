@@ -9,28 +9,18 @@ import RxCocoa
 import ReactorKit
 import RxKeyboard
 
-let testTodayAgendaList = ["주간회의 업무 보고", "컨퍼런스 미팅", "컨퍼런스 연사 준비", "외부 밋업 초청 컨택", "기술 블로그 작성하기", "세미나 개최하기"]
-
-public class HomeViewController: BaseReactorViewController<HomeReactor> {
-    let homeView = HomeView()
+public final class NewHomeViewController: BaseReactorViewController<HomeReactor> {    
+    let homeView = NewHomeView()
     
     public override func loadView() {
-        self.view = homeView
+        view = homeView
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        configureNavigation()
         setDelegate()
         hideKeyboardWhenTappedAround()
-        reactor?.action.onNext(.viewDidLoad)
-    }
-    
-    public override func configureNavigation() {
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
-    }
-    
-    public override func configureUI() {
     }
     
     private func setDelegate() {
@@ -43,59 +33,44 @@ public class HomeViewController: BaseReactorViewController<HomeReactor> {
     }
     
     public override func bindState(reactor: HomeReactor) {
-        reactor.state.map(\.isVisibleCalendar)
-            .distinctUntilChanged()
-            .withUnretained(self)
-            .subscribe(onNext: { owner, isVisibleCalendar in
+        let sharedState = reactor.state.share()
+        
+        reactor.pulse(\.$isVisibleCalendar)
+            .compactMap { $0 }
+            .bind(with: self, onNext: { owner, isVisibleCalendar in
+                print("isVisibleCalendar", isVisibleCalendar)
                 owner.homeView.calendarVisibleButton.toggleCalendarVisible()
-                //owner.updateCalendarVisibility(isVisibleCalendar)
+                owner.updateCalendarVisibility(isVisibleCalendar)
             }).disposed(by: disposeBag)
         
-        reactor.state.map(\.uncompletedAgendaDataSource)
+        sharedState.map(\.uncompletedAgendaDataSource)
             .distinctUntilChanged()
-            .withUnretained(self)
-            .subscribe(onNext: { owner, dataSource in
+            .bind(with: self, onNext: { owner, dataSource in
+                print("uncompletedAgendaDataSource changed!!!!")
                 var snapshot = owner.homeView.todayAgendaTableViewDiffableDataSource.snapshot()
-                
-                let sectionIdentifier = 0
-                if !snapshot.sectionIdentifiers.contains(sectionIdentifier) {
-                    snapshot.appendSections([sectionIdentifier])
-                }
                 snapshot.appendItems(dataSource, toSection: 0)
-                
                 owner.homeView.todayAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
             }).disposed(by: disposeBag)
         
-        reactor.state.map(\.completedAgendaDataSource)
+        sharedState.map(\.completedAgendaDataSource)
             .distinctUntilChanged()
-            .withUnretained(self)
-            .subscribe(onNext: { owner, dataSource in
+            .bind(with: self, onNext: { owner, dataSource in
+                print("CompletedAgendaDataSource changed!!!!")
                 var snapshot = owner.homeView.completedAgendaTableViewDiffableDataSource.snapshot()
-                
-                let sectionIdentifier = 0
-                if !snapshot.sectionIdentifiers.contains(sectionIdentifier) {
-                    snapshot.appendSections([sectionIdentifier])
-                }
                 snapshot.appendItems(dataSource, toSection: 0)
-                
                 owner.homeView.completedAgendaTableViewDiffableDataSource.apply(snapshot, animatingDifferences: true)
             }).disposed(by: disposeBag)
         
-        reactor.state.map(\.keyboardState)
+        sharedState.map(\.keyboardState)
             .distinctUntilChanged()
-            .bind(with: self) { owner, state in
+            .bind(with: self, onNext: { owner, state in
                 owner.updateViewInsetForKeyboardState(state.isShow, state.height)
                 owner.homeView.todayAgendaTableView.setEditing(!state.isShow, animated: false)
-            }.disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
         
     }
     
     public override func bindAction(reactor: HomeReactor) {
-        self.rx.methodInvoked(#selector(viewDidLoad))
-            .map { _ in Reactor.Action.viewDidLoad }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
             .compactMap { notification in
                 notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
@@ -109,26 +84,13 @@ public class HomeViewController: BaseReactorViewController<HomeReactor> {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        homeView.todayAgendaButton.button.rx.tap
-            .withUnretained(self)
-            .bind { owner, _ in
-                print("todayAgendaButton")
-            }.disposed(by: disposeBag)
-        
-        homeView.growUpButton.button.rx.tap
-            .withUnretained(self)
-            .bind { owner, _ in
-                print("growUpButton")
-            }.disposed(by: disposeBag)
-        
         homeView.calendarVisibleButton.button.rx.tap
             .map { _ in Reactor.Action.calendarVisibleButtonDidTap }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         homeView.addButton.rx.tap
-            .withUnretained(self)
-            .bind { owner, _ in
+            .bind(with: self, onNext: { owner, _ in
                 var snapshot = owner.homeView.todayAgendaTableViewDiffableDataSource.snapshot()
                 
                 if let first = snapshot.itemIdentifiers.first {
@@ -144,49 +106,41 @@ public class HomeViewController: BaseReactorViewController<HomeReactor> {
                     cell.becomeFirstResponderToTextField()
                 }
                 
-            }.disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
     }
+    
 }
 
-private extension HomeViewController {
+private extension NewHomeViewController {
     func updateViewInsetForKeyboardState(_ isShowKeyboard: Bool, _ keyboardHeight: CGFloat) {
-        print("updateViewInsetForKeyboardHeight", isShowKeyboard, keyboardHeight)
+        print("updateViewInsetForKeyboardHeight 호출", isShowKeyboard, keyboardHeight)
         let isVisibleCalendar = self.homeView.calendarVisibleButton.isVisibleCalendar
         var newInset = UIEdgeInsets()
         
         if isVisibleCalendar {
             // 캘린더가 보여지고 있을 때, 키보드가 나타나면 (캘린더 높이 + 키보드 높이) 키보드가 사라지면 (캘린더 높이)
             let newBottomInset = isShowKeyboard ? homeView.calendarViewHeight + keyboardHeight : homeView.calendarViewHeight
-            newInset = UIEdgeInsets(top: 0, left: 0, bottom: CGFloat(newBottomInset), right: 0)
-            //newInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-
+            newInset = UIEdgeInsets(top: 0, left: 0, bottom: newBottomInset, right: 0)
         } else {
             newInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-            //newInset = .zero
         }
 
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self else { return }
-            self.homeView.scrollView.contentInset = newInset
-            self.homeView.scrollView.scrollIndicatorInsets = newInset
-        }
+        self.homeView.scrollView.contentInset = newInset
+        //self.homeView.scrollView.scrollIndicatorInsets = newInset
+        //self.view.layoutIfNeeded()
     }
     
     func updateCalendarVisibility(_ isVisible: Bool) {
+        print("updateCalendarVisibility 호출", isVisible)
         let newCalendarHeight: CGFloat = isVisible ? self.homeView.calendarViewHeight : 0
-        let newContentInset: UIEdgeInsets = isVisible ? UIEdgeInsets(top: 0, left: 0, bottom: homeView.calendarViewHeight, right: 0) : .zero
+        let newContentInset: UIEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: newCalendarHeight, right: 0)
         
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self else { return }
-            self.homeView.calendarView.snp.updateConstraints {
-                $0.height.equalTo(newCalendarHeight)
-            }
-            
-            self.homeView.scrollView.contentInset = newContentInset
-            self.homeView.scrollView.scrollIndicatorInsets = newContentInset
-            
-            //self.view.layoutIfNeeded()
+        self.homeView.calendarView.snp.updateConstraints {
+            $0.height.equalTo(newCalendarHeight)
         }
+        self.homeView.scrollView.contentInset = newContentInset
+        //self.homeView.scrollView.scrollIndicatorInsets = newContentInset
+        //self.view.layoutIfNeeded()
     }
     
 }

@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import Inject
+@testable import HomeFeature
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(windowScene: windowScene)
         
         let viewController = Inject.ViewControllerHost(
-            UINavigationController(rootViewController: DemoHomeViewController())
+            UINavigationController(rootViewController: DemoHomeViewController(reactor: HomeReactor()))
         )
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()

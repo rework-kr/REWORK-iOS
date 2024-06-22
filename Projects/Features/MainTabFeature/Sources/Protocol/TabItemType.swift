@@ -30,7 +30,8 @@ public enum TabItemType {
     var viewController: UIViewController {
         switch self {
         case .home:
-            HomeViewController(reactor: HomeReactor())
+            NewHomeViewController(reactor: HomeReactor())
+            //HomeViewController(reactor: HomeReactor())
             //UIViewController().then { $0.view.backgroundColor = .yellow }
         case .achievement:
             UIViewController().then { $0.view.backgroundColor = .green }

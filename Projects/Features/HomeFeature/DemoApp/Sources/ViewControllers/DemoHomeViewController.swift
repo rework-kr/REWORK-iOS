@@ -12,9 +12,7 @@ import RxKeyboard
 
 let testTodayAgendaList = ["주간회의 업무 보고", "컨퍼런스 미팅", "컨퍼런스 연사 준비", "외부 밋업 초청 컨택", "기술 블로그 작성하기", "세미나 개최하기"]
 
-public class DemoHomeViewController: BaseViewController {
-    public var disposeBag = DisposeBag()
-    
+public class DemoHomeViewController: BaseReactorViewController<HomeReactor> {
     let scrollView = UIScrollView()
     let contentView = UIView()
     let hStackView = UIStackView().then {
@@ -113,27 +111,16 @@ public class DemoHomeViewController: BaseViewController {
     
     private let calendarViewHeight: CGFloat = 260
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     public override func viewDidLoad() {
         super.viewDidLoad()
         print("ViewDidLoad")
         addSubViews()
         setLayout()
-        self.reactor = DemoHomeReactor()
         reactor?.action.onNext(.viewDidLoad)
         hideKeyboardWhenTappedAround()
         navigationController?.isNavigationBarHidden = true
     }
-}
-
-extension DemoHomeViewController {
+    
     func addSubViews() {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -150,7 +137,7 @@ extension DemoHomeViewController {
         contentView.addSubview(completedAgendaTableView)
     }
     
-    func setLayout() {
+    public override func setLayout() {
         self.view.backgroundColor = .white
         
         let contentViewHeight: CGFloat = APP_HEIGHT() - STATUS_BAR_HEIGHT() - SAFEAREA_BOTTOM_HEIGHT()
@@ -222,10 +209,8 @@ extension DemoHomeViewController {
         }
         
     }
-}
-
-extension DemoHomeViewController: View {
-    public func bind(reactor: DemoHomeReactor) {
+    
+    public override func bind(reactor: HomeReactor) {
         print("✅ bind!")
         calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
         todayAgendaTableView.isEditing = true
@@ -238,7 +223,7 @@ extension DemoHomeViewController: View {
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: DemoHomeReactor) {
+    public override func bindAction(reactor: HomeReactor) {
         self.rx.methodInvoked(#selector(viewDidLoad))
             .map { _ in Reactor.Action.viewDidLoad }
             .bind(to: reactor.action)
@@ -343,7 +328,6 @@ extension DemoHomeViewController: View {
                 owner.todayAgendaTableView.setEditing(!state.isShow, animated: false)
             }).disposed(by: disposeBag)
     }
-    
 }
 
 private extension DemoHomeViewController {
