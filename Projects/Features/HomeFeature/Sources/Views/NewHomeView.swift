@@ -63,11 +63,15 @@ final class NewHomeView: UIView {
     
     weak var agendaCellDelegate: AgendaCellDelegate?
     
-    lazy var todayAgendaTableViewDiffableDataSource = AgendaDataSource.create(
-        tableView: todayAgendaTableView,
-        agendaCellDelegate: agendaCellDelegate,
-        agendaType: .uncompleted
-    )
+    lazy var todayAgendaTableViewDiffableDataSource = AgendaDataSource(tableView: todayAgendaTableView)
+    {
+        [weak self] tableView, indexPath, itemIdentifier in
+        guard let self, let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell else { return UITableViewCell() }
+        cell.configure(title: itemIdentifier.title, type: .uncompleted)
+        cell.delegate = self.agendaCellDelegate
+        cell.selectionStyle = .none
+        return cell
+    }
     
     let completedAgendaCount = UILabel().then {
         $0.numberOfLines = 0
@@ -86,11 +90,16 @@ final class NewHomeView: UIView {
         //$0.separatorStyle = .none
     }
     
-    lazy var completedAgendaTableViewDiffableDataSource = AgendaDataSource.create(
-        tableView: completedAgendaTableView,
-        agendaCellDelegate: agendaCellDelegate,
-        agendaType: .completed
-    )
+    lazy var completedAgendaTableViewDiffableDataSource = AgendaDataSource(tableView: completedAgendaTableView)
+    { 
+        [weak self] tableView, indexPath, itemIdentifier in
+        guard let self, let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reuseIdentifier, for: indexPath) as? AgendaCell
+        else { return UITableViewCell() }
+        cell.configure(title: itemIdentifier.title, type: .completed)
+        cell.delegate = self.agendaCellDelegate
+        cell.selectionStyle = .none
+        return cell
+    }
     
     private let testLabel = UILabel().then {
         $0.numberOfLines = 0
