@@ -29,8 +29,9 @@ let targets: [Target] = [
           //entitlements: "Support/\(env.name).entitlements",
           scripts: [],
           dependencies: [
-            .Project.Features.SignInFeature,
-            .Project.Domain.AuthDomain
+            .Project.Features.RootFeature
+            //.Project.Features.SignInFeature,
+            //.Project.Domain.AuthDomain
           ],
           settings: .settings(
             base: env.baseSetting,

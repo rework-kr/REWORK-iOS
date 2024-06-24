@@ -36,8 +36,7 @@ public final class SignInReactor: Reactor {
         self.initialState = .init(
             keyboardHeight: 0,
             email: "",
-            viewDidLoaded: false,
-            loggedIn: false
+            viewDidLoaded: false
         )
     }
     

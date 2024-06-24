@@ -88,7 +88,8 @@ public final class MainTabViewController: BaseReactorViewController<MainTabReact
 extension MainTabViewController: TabItemDelegate {
     public func tabItemDidTap(tabItemType: TabItemType) {
         print("tabItemDidTap:", tabItemType.title)
-        switchToViewController(tabItemType)
+        //switchToViewController(tabItemType)
+        NotificationCenter.default.post(name: .loginStateDidChanged, object: false)
     }
     
     private func switchToViewController(_ tabItemType: TabItemType) {

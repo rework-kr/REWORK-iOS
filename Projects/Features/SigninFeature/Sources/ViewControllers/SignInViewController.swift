@@ -192,6 +192,11 @@ extension SignInViewController: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        loginButton.rx.tap
+            .map { Reactor.Action.loginButtonDidTap }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         signupButton.rx.tap
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
@@ -227,6 +232,7 @@ extension SignInViewController: View {
             .compactMap { $0 }
             .bind(with: self) { owner, isLoggedIn in
                 print("로그인 버튼 눌림", isLoggedIn)
+                NotificationCenter.default.post(name: .loginStateDidChanged, object: true)
             }
             .disposed(by: disposeBag)
     }

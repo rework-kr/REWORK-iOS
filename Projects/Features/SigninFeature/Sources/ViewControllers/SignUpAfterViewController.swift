@@ -112,7 +112,13 @@ extension SignUpAfterViewController: View {
         returnToLoginButton.rx.tap
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
-                owner.navigationController?.popToRootViewController(animated: true)
+                if let presentingViewControllers = owner.navigationController?.viewControllers {
+                    for viewController in presentingViewControllers {
+                        if viewController is SignInViewController {
+                            owner.navigationController?.popToViewController(viewController, animated: true)
+                        }
+                    }
+                }
             })
             .disposed(by: disposeBag)
     }

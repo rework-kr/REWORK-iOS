@@ -7,11 +7,9 @@
 //
 
 import UIKit
-import SignInFeature
-import HomeFeature
-import MainTabFeature
 import AuthDomain
 import KeychainModule
+import RootFeature
 import RxSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -30,18 +28,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let remote = RemoteAuthDataSourceImpl(keychain: keychain)
         let repository = AuthRepositoryImpl(localAuthDataSource: local, remoteAuthDataSource: remote)
         let checkIsExistAccessTokenUseCase = CheckIsExistAccessTokenUseCaseImpl(authRepository: repository)
-        var entryViewController: UIViewController = SignInViewController()
-        checkIsExistAccessTokenUseCase.execute()
-            .asObservable()
-            .flatMap { isExist in
-                return isExist ? Observable.just(true) : Observable.just(false)
-            }
-            .subscribe { isExist in
-                entryViewController = isExist ? MainTabViewController(reactor: MainTabReactor()) : SignInViewController()
-            }
-            .disposed(by: disposeBag)
+        let reactor = RootReactor(checkIsExistAccessTokenUseCase: checkIsExistAccessTokenUseCase)
         
-        let vc = UINavigationController(rootViewController: MainTabViewController(reactor: MainTabReactor()))
+        let vc = UINavigationController(rootViewController: RootViewController(reactor: reactor))
         self.window?.rootViewController = vc
         self.window?.makeKeyAndVisible()
     }
